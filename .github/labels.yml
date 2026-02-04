@@ -1,0 +1,81 @@
+# Core workstreams
+- name: modeling
+  color: "0E8A16"
+  description: COMSOL physics/modeling tasks
+
+- name: electronics
+  color: "1D76DB"
+  description: GFET electrical response, readout, noise
+
+- name: analysis
+  color: "5319E7"
+  description: Post-processing, sensitivity, interpretation
+
+- name: documentation
+  color: "0075CA"
+  description: Docs, GitHub Pages, writing, diagrams
+
+# Workflow/status labels (prefix to keep them grouped)
+- name: "status: needs-triage"
+  color: "FBCA04"
+  description: New issue; needs review and breakdown
+
+- name: "status: ready"
+  color: "0E8A16"
+  description: Well-defined; ready to implement
+
+- name: "status: in-progress"
+  color: "1D76DB"
+  description: Actively being worked on
+
+- name: "status: blocked"
+  color: "D93F0B"
+  description: Blocked by dependency or decision
+
+- name: "status: done"
+  color: "C2E0C6"
+  description: Completed and verified
+
+# Priority (keep small and decisive)
+- name: "priority: p0"
+  color: "B60205"
+  description: Must-do now; blocks milestone progress
+
+- name: "priority: p1"
+  color: "D93F0B"
+  description: Important; should be done soon
+
+- name: "priority: p2"
+  color: "FBCA04"
+  description: Normal priority
+
+- name: "priority: p3"
+  color: "C2E0C6"
+  description: Nice-to-have / backlog
+
+# Research hygiene
+- name: "needs: citation"
+  color: "D4C5F9"
+  description: Add a paper/source/standard to justify assumption
+
+- name: "needs: validation"
+  color: "D4C5F9"
+  description: Needs verification against baseline or known behavior
+
+- name: "needs: figure"
+  color: "D4C5F9"
+  description: Add plot/visualization output
+
+# Risk tags (use sparingly)
+- name: "risk: solver"
+  color: "D93F0B"
+  description: COMSOL convergence/solver stability risk
+
+- name: "risk: scope"
+  color: "D93F0B"
+  description: Scope creep risk; check boundaries
+
+# Meta
+- name: "good first issue"
+  color: "7057FF"
+  description: Easy starter task with clear definition of done
