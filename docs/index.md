@@ -60,10 +60,10 @@ We compare:
 ### Parametric Sweep: Diffusivity Ratio
 We sweep the diffusivity ratio:
 
-\[
+$\[
 r = \frac{D_{\text{medulla}}}{D_{\text{cortex}}} \in [0.1, 1]
-\]
+\]$
 
-**Observation:** decreasing \( r \) increases cortex–medulla uptake delay, strengthening the conclusion that **internal heterogeneity imposes a fundamental transport limit** on biosensor response time.
+**Observation:** decreasing $\( r \)$ increases cortex–medulla uptake delay, strengthening the conclusion that **internal heterogeneity imposes a fundamental transport limit** on biosensor response time.
 
 ---
