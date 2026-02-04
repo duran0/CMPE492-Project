@@ -6,6 +6,21 @@ assignees:
   - DuranKaanAltin
 
 body:
+  
+  - type: dropdown
+    id: target_milestone
+    attributes:
+      label: Target Milestone
+      description: Select which milestone this issue belongs to (auto-assigned by workflow).
+      options:
+        - M1 - Setup & Baseline Lock
+        - M2 - Transport-Limited Analysis
+        - M3 - Electrical Response Integration
+        - M4 - Sensitivity & Design Insights
+        - M5 - Finalization & Submission
+    validations:
+      required: true
+  
   - type: textarea
     id: scope
     attributes:
