@@ -1,0 +1,43 @@
+name: Documentation
+description: Writing, diagrams, GitHub Pages, or reproducibility work
+title: "[DOC] "
+labels: ["documentation"]
+assignees:
+  - DuranKaanAltin
+
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Documentation Scope
+      description: What will be documented?
+      placeholder: Reproducibility steps for COMSOL model
+    validations:
+      required: true
+
+  - type: textarea
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who is this documentation for?
+      placeholder: CMPE coordinators, academic reviewers
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Expected Output
+      description: File or page to be produced.
+      placeholder: docs/reproducibility.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      description: Completion criteria.
+      placeholder: Page renders correctly on GitHub Pages
+    validations:
+      required: true

@@ -1,0 +1,43 @@
+name: Modeling Task
+description: COMSOL modeling or physics-related task
+title: "[MODEL] "
+labels: ["modeling"]
+assignees:
+  - DuranKaanAltin
+
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Clearly describe the modeling goal.
+      placeholder: e.g., Implement heterogeneous diffusion for cortex and medulla
+    validations:
+      required: true
+
+  - type: textarea
+    id: physics
+    attributes:
+      label: Physics & Assumptions
+      description: What physics interfaces, equations, and assumptions are involved?
+      placeholder: Transport of Diluted Species, Fickian diffusion, no convection
+    validations:
+      required: true
+
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Key Parameters
+      description: Parameters to be introduced or swept.
+      placeholder: D_cortex, D_medulla, inlet concentration
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      description: What conditions must be met to close this issue?
+      placeholder: Model runs, results validated, plots exported
+    validations:
+      required: true

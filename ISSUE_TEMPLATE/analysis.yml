@@ -1,0 +1,43 @@
+name: Analysis & Sensitivity
+description: Post-processing, interpretation, or sensitivity analysis
+title: "[ANALYSIS] "
+labels: ["analysis"]
+assignees:
+  - DuranKaanAltin
+
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research Question
+      description: What question does this analysis answer?
+      placeholder: Is the sensor transport-limited or electronics-limited?
+    validations:
+      required: true
+
+  - type: textarea
+    id: method
+    attributes:
+      label: Methodology
+      description: How will the analysis be performed?
+      placeholder: Parametric sweep, volume-averaged concentration, comparison plots
+    validations:
+      required: true
+
+  - type: textarea
+    id: insight
+    attributes:
+      label: Expected Insight
+      description: What engineering conclusion do you expect?
+      placeholder: Transport dominates response time at low diffusivity ratios
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      description: When is this issue complete?
+      placeholder: Insight documented with plots and interpretation
+    validations:
+      required: true

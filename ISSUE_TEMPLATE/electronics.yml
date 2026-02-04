@@ -1,0 +1,43 @@
+name: GFET / Electronics Task
+description: Electrical modeling or signal transduction task
+title: "[GFET] "
+labels: ["electronics"]
+assignees:
+  - DuranKaanAltin
+
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Describe the electronics-related goal.
+      placeholder: Map surface charge density to drain-source current shift
+    validations:
+      required: true
+
+  - type: textarea
+    id: equations
+    attributes:
+      label: Governing Equations
+      description: Relevant equations or models.
+      placeholder: ΔI_DS = (W/L)·e·μ·V_DS·Δn
+    validations:
+      required: true
+
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Assumptions
+      description: Noise assumptions, linearity, operating regime.
+      placeholder: Low V_DS, linear regime, thermal noise only
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of Done
+      description: Clear completion criteria.
+      placeholder: Electrical response curve generated and validated
+    validations:
+      required: true
