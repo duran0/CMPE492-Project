@@ -19,6 +19,8 @@ __pycache__/
 venv/
 
 # COMSOL temporary and recovery files
+*.class
+*.class.status
 *.mph.lock
 *.mph.status
 *.mph.recovery

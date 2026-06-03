@@ -48,6 +48,15 @@ HER2 concentration
 3. Use `scripts/preprocess_comsol_exports.py` when COMSOL exports include comment headers or inconsistent spacing.
 4. Use `scripts/plot_response_curves.py` and `scripts/calculate_lod.py` to regenerate analysis plots and LOD estimates from exported tables.
 
+On this Windows setup, the current reproducible workflow is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build_comsol_models.ps1
+powershell -ExecutionPolicy Bypass -File scripts\generate_verified_outputs.ps1
+```
+
+The first command rebuilds the COMSOL model files from Java source. The second command regenerates CSV outputs and PNG figures from the documented parameter assumptions.
+
 ## Citation and References
 
 The scientific background should be tracked in `docs/literature_summary.md` and `report/references.bib`. Any parameter adopted from a paper, datasheet, or COMSOL example should be traceable to a reference entry or note.
