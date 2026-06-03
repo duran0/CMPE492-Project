@@ -1,0 +1,14 @@
+name,symbol,nominal_value,unit,role,status,notes
+HER2 concentration,c_HER2,0.5-1000,pM,input,planned,Parametric sweep range from midterm roadmap
+Forward binding rate,k_f,TBD,TBD,kinetics,needs-citation,HER2-antibody association rate
+Reverse binding rate,k_r,TBD,TBD,kinetics,needs-citation,HER2-antibody dissociation rate
+Dissociation constant,K_d,TBD,TBD,kinetics,derived,K_d = k_r / k_f
+Maximum antibody site density,Gamma_max,TBD,mol/m^2,surface-binding,needs-citation,Available antibody sites on GFET surface
+HER2 diffusion coefficient,D_HER2,TBD,m^2/s,transport,needs-citation,Use medium-specific value
+Channel width,W,TBD,m,electrical,planned,GFET channel width
+Channel length,L,TBD,m,electrical,planned,GFET channel length
+Carrier mobility,mu,TBD,m^2/(V*s),electrical,needs-citation,Graphene carrier mobility assumption
+Drain-source voltage,V_DS,TBD,V,electrical,planned,Electrical bias
+Coupling efficiency,eta,TBD,dimensionless,electrical,needs-citation,Maps bound HER2 charge to effective carrier density
+Noise standard deviation,sigma_I,TBD,A,lod-analysis,planned,Required for LOD = 3 sigma / S
+Target limit of detection,LOD_target,<=1,pM,lod-analysis,target,Success criterion

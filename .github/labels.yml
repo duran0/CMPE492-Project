@@ -1,19 +1,71 @@
 # Core workstreams
+- name: repo-setup
+  color: "C5DEF5"
+  description: Repository structure, hygiene, and setup work
+
 - name: modeling
   color: "0E8A16"
   description: COMSOL physics/modeling tasks
+
+- name: comsol
+  color: "0E8A16"
+  description: COMSOL model files, exports, and settings
+
+- name: simulation
+  color: "5319E7"
+  description: Simulation execution and solver outputs
+
+- name: kinetics
+  color: "BFDADC"
+  description: HER2-antibody reaction kinetics
+
+- name: transport
+  color: "BFD4F2"
+  description: Diffusion, convection, and mass transport tasks
+
+- name: surface-reaction
+  color: "D4C5F9"
+  description: Surface binding and occupancy modeling
 
 - name: electronics
   color: "1D76DB"
   description: GFET electrical response, readout, noise
 
+- name: electrical
+  color: "1D76DB"
+  description: GFET electrical response modeling
+
 - name: analysis
   color: "5319E7"
   description: Post-processing, sensitivity, interpretation
 
+- name: results
+  color: "006B75"
+  description: Result tables, plots, and exported outputs
+
+- name: validation
+  color: "FBCA04"
+  description: Validation, comparison, and sanity checks
+
 - name: documentation
   color: "0075CA"
   description: Docs, GitHub Pages, writing, diagrams
+
+- name: research
+  color: "D4C5F9"
+  description: Literature review and scientific background
+
+- name: report
+  color: "0075CA"
+  description: Final report work
+
+- name: poster
+  color: "7057FF"
+  description: Poster preparation and visual layout
+
+- name: video
+  color: "5319E7"
+  description: Final video script, assets, and submission
 
 # Workflow/status labels (prefix to keep them grouped)
 - name: "status: needs-triage"
@@ -45,13 +97,25 @@
   color: "D93F0B"
   description: Important; should be done soon
 
+- name: priority-high
+  color: "D93F0B"
+  description: High-priority final deliverable work
+
 - name: "priority: p2"
   color: "FBCA04"
   description: Normal priority
 
+- name: priority-medium
+  color: "FBCA04"
+  description: Medium-priority final deliverable work
+
 - name: "priority: p3"
   color: "C2E0C6"
   description: Nice-to-have / backlog
+
+- name: blocked
+  color: "D93F0B"
+  description: Blocked by dependency, missing data, or decision
 
 # Research hygiene
 - name: "needs: citation"
