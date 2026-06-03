@@ -1,0 +1,8 @@
+﻿"time_s","r","v_in_m_s","M2_diffusion_sensor_surface_pM","M2B_flow_sensor_surface_pM","flow_exposure_gain","source"
+"0","0.5","5E-07","0","0","","M2B compared with preserved M2 diffusion baseline"
+"100","0.5","5E-07","0.1187080197223","0.376421384137697","3.17098528825835","M2B compared with preserved M2 diffusion baseline"
+"500","0.5","5E-07","0.578419512215395","1.74018477045137","3.00851671442812","M2B compared with preserved M2 diffusion baseline"
+"1000","0.5","5E-07","1.12047281441867","3.16492755805786","2.82463574067159","M2B compared with preserved M2 diffusion baseline"
+"2000","0.5","5E-07","2.10448265841872","5.28644194447467","2.51199121234234","M2B compared with preserved M2 diffusion baseline"
+"4000","0.5","5E-07","3.72756887557819","7.66179342725131","2.05543980084416","M2B compared with preserved M2 diffusion baseline"
+"6000","0.5","5E-07","4.97937718000608","8.72910764842164","1.75305210528578","M2B compared with preserved M2 diffusion baseline"

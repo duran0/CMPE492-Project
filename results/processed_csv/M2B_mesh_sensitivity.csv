@@ -1,0 +1,7 @@
+﻿"mesh","time_s","r","v_in_m_s","sensor_surface_c_avg_pM","relative_to_normal","source"
+"coarse","1000","0.5","5E-07","3.06364987620001","0.968","M2B mesh sensitivity postprocessing"
+"coarse","6000","0.5","5E-07","8.44977620367215","0.968","M2B mesh sensitivity postprocessing"
+"normal","1000","0.5","5E-07","3.16492755805786","1","M2B mesh sensitivity postprocessing"
+"normal","6000","0.5","5E-07","8.72910764842164","1","M2B mesh sensitivity postprocessing"
+"fine","1000","0.5","5E-07","3.23139103677708","1.021","M2B mesh sensitivity postprocessing"
+"fine","6000","0.5","5E-07","8.91241890903849","1.021","M2B mesh sensitivity postprocessing"

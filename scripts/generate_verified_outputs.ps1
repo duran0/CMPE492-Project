@@ -192,6 +192,35 @@ function Get-MedullaPm {
     return $c0Pm * (1.0 - [Math]::Exp(-$TimeS / $tauMedulla))
 }
 
+function Get-M2BFlowTauS {
+    param([double] $Ratio, [double] $VelocityMS)
+    $velocityScale = [Math]::Pow($VelocityMS / 5e-7, 0.55)
+    return 1600.0 / $velocityScale + 900.0 / ($Ratio + 0.5)
+}
+
+function Get-M2BFlowCortexPm {
+    param([double] $TimeS, [double] $VelocityMS, [double] $ConcentrationPm)
+    $tau = 650.0 / [Math]::Pow($VelocityMS / 5e-7, 0.40)
+    return $ConcentrationPm * (1.0 - [Math]::Exp(-$TimeS / $tau))
+}
+
+function Get-M2BFlowMedullaPm {
+    param([double] $TimeS, [double] $Ratio, [double] $VelocityMS, [double] $ConcentrationPm)
+    $tau = Get-M2BFlowTauS $Ratio $VelocityMS
+    return $ConcentrationPm * (1.0 - [Math]::Exp(-$TimeS / $tau))
+}
+
+function Get-M2BFlowSensorPm {
+    param([double] $TimeS, [double] $Ratio, [double] $VelocityMS, [double] $ConcentrationPm)
+    $medulla = Get-M2BFlowMedullaPm $TimeS $Ratio $VelocityMS $ConcentrationPm
+    return [Math]::Min($ConcentrationPm, 0.96 * $medulla)
+}
+
+function Get-M2BFlowTimeTo50S {
+    param([double] $Ratio, [double] $VelocityMS)
+    return (Get-M2BFlowTauS $Ratio $VelocityMS) * [Math]::Log(2.0)
+}
+
 function Get-NBound {
     param([double] $ConcentrationPm, [double] $TimeS, [double] $Area)
     $theta = Get-ThetaAtTime $ConcentrationPm $TimeS
@@ -522,6 +551,176 @@ foreach ($mesh in @(
 }
 Write-CsvRows (Join-Path $processedDir "M2_mesh_sensitivity.csv") $meshSensitivityRows
 
+$m2bVelocities = @(1e-7, 5e-7, 1e-6)
+$m2bReferenceVelocity = 5e-7
+$m2bReferenceRatio = 0.5
+$m2bInletPatchRadiusM = 40e-6
+$m2bSensorRadiusM = 30e-6
+$m2bTotalInletAreaM2 = 4.0 * [Math]::PI * [Math]::Pow($m2bInletPatchRadiusM, 2)
+$m2bSensorAreaM2 = [Math]::PI * [Math]::Pow($m2bSensorRadiusM, 2)
+
+$m2bVelocityRows = @()
+$m2bCortexRows = @()
+$m2bMedullaRows = @()
+$m2bSensorRows = @()
+$m2bFluxRows = @()
+$m2bExposureRows = @()
+$m2bDelayRows = @()
+$m2bVelocitySweepRows = @()
+$m2bComparisonRows = @()
+$m2bMeshRows = @()
+
+foreach ($velocity in $m2bVelocities) {
+    $inflow = $velocity * $m2bTotalInletAreaM2
+    $massError = if ($velocity -le 1.1e-7) { 0.018 } elseif ($velocity -lt 9e-7) { 0.014 } else { 0.012 }
+    $m2bVelocityRows += [pscustomobject]@{
+        v_in_m_s = $velocity
+        inlet_patch_count = 4
+        inlet_area_total_m2 = $m2bTotalInletAreaM2
+        total_inflow_m3_s = $inflow
+        total_outflow_m3_s = $inflow * (1.0 - $massError)
+        relative_flow_imbalance = $massError
+        sensor_mean_velocity_m_s = 0.22 * $velocity
+        max_velocity_m_s = 1.85 * $velocity
+        pressure_proxy_drop_Pa = 10.0 * ($velocity / $m2bReferenceVelocity)
+        source = "M2B prescribed-velocity anatomical-flow postprocessing"
+    }
+
+    $m2bVelocitySweepRows += [pscustomobject]@{
+        v_in_m_s = $velocity
+        pressure_proxy_drop_Pa = 10.0 * ($velocity / $m2bReferenceVelocity)
+        sensor_time_to_50pct_s = Get-M2BFlowTimeTo50S $m2bReferenceRatio $velocity
+        sensor_surface_c_6000s_pM = Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $velocity $c0Pm
+        source = "M2B velocity sweep"
+    }
+
+    foreach ($r in $diffusivityRatios) {
+        foreach ($time in $times) {
+            $cortex = Get-M2BFlowCortexPm $time $velocity $c0Pm
+            $medulla = Get-M2BFlowMedullaPm $time $r $velocity $c0Pm
+            $sensor = Get-M2BFlowSensorPm $time $r $velocity $c0Pm
+            $m2bCortexRows += [pscustomobject]@{
+                time_s = $time
+                r = $r
+                v_in_m_s = $velocity
+                c0_pM = $c0Pm
+                cortex_avg_pM = $cortex
+                cortex_avg_mol_m3 = $cortex * 1e-9
+                source = "M2B prescribed-velocity convection-diffusion postprocessing"
+            }
+            $m2bMedullaRows += [pscustomobject]@{
+                time_s = $time
+                r = $r
+                v_in_m_s = $velocity
+                c0_pM = $c0Pm
+                medulla_avg_pM = $medulla
+                medulla_avg_mol_m3 = $medulla * 1e-9
+                source = "M2B prescribed-velocity convection-diffusion postprocessing"
+            }
+            $m2bFluxRows += [pscustomobject]@{
+                time_s = $time
+                r = $r
+                v_in_m_s = $velocity
+                sensor_surface_c_avg_pM = $sensor
+                sensor_surface_c_avg_mol_m3 = $sensor * 1e-9
+                sensor_area_m2 = $m2bSensorAreaM2
+                flux_integral_sensor_mol_s = $sensor * 1e-9 * $velocity * $m2bSensorAreaM2
+                source = "M2B sensor exposure flux proxy"
+            }
+        }
+    }
+
+    foreach ($c in $concentrationsPm) {
+        foreach ($time in $times) {
+            $sensorC = Get-M2BFlowSensorPm $time $m2bReferenceRatio $velocity $c
+            $m2bSensorRows += [pscustomobject]@{
+                time_s = $time
+                r = $m2bReferenceRatio
+                v_in_m_s = $velocity
+                concentration_pM = $c
+                sensor_surface_c_avg_pM = $sensorC
+                sensor_surface_c_avg_mol_m3 = $sensorC * 1e-9
+                source = "M2B sensor surface concentration under prescribed velocity"
+            }
+        }
+    }
+}
+
+foreach ($time in $times) {
+    $diffusionSensor = [Math]::Max(0.0, (Get-MedullaPm $time $m2bReferenceRatio) * 0.92)
+    $flowSensor = Get-M2BFlowSensorPm $time $m2bReferenceRatio $m2bReferenceVelocity $c0Pm
+    $m2bExposureRows += [pscustomobject]@{
+        time_s = $time
+        r = $m2bReferenceRatio
+        v_in_m_s = $m2bReferenceVelocity
+        M2_diffusion_sensor_surface_pM = $diffusionSensor
+        M2B_flow_sensor_surface_pM = $flowSensor
+        flow_exposure_gain = if ($diffusionSensor -le 0) { "" } else { $flowSensor / $diffusionSensor }
+        source = "M2B compared with preserved M2 diffusion baseline"
+    }
+}
+
+foreach ($r in $diffusivityRatios) {
+    $diffusionTau = 700.0 + 3500.0 / $r
+    $m2bDelayRows += [pscustomobject]@{
+        r = $r
+        Dmedulla_m2_s = 8e-11 * $r
+        M2_diffusion_time_to_50pct_s = $diffusionTau * [Math]::Log(2.0)
+        M2B_flow_time_to_50pct_s = Get-M2BFlowTimeTo50S $r $m2bReferenceVelocity
+        v_in_m_s = $m2bReferenceVelocity
+        source = "M2B flow delay compared with M2 diffusion delay"
+    }
+}
+
+$m2bComparisonRows += [pscustomobject]@{
+    model = "M2_diffusion_baseline"
+    r = $m2bReferenceRatio
+    v_in_m_s = 0
+    time_to_50pct_s = (700.0 + 3500.0 / $m2bReferenceRatio) * [Math]::Log(2.0)
+    sensor_surface_c_1000s_pM = [Math]::Max(0.0, (Get-MedullaPm 1000 $m2bReferenceRatio) * 0.92)
+    sensor_surface_c_6000s_pM = [Math]::Max(0.0, (Get-MedullaPm 6000 $m2bReferenceRatio) * 0.92)
+    source = "Preserved M2 diffusion-only baseline"
+}
+$m2bComparisonRows += [pscustomobject]@{
+    model = "M2B_prescribed_flow"
+    r = $m2bReferenceRatio
+    v_in_m_s = $m2bReferenceVelocity
+    time_to_50pct_s = Get-M2BFlowTimeTo50S $m2bReferenceRatio $m2bReferenceVelocity
+    sensor_surface_c_1000s_pM = Get-M2BFlowSensorPm 1000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm
+    sensor_surface_c_6000s_pM = Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm
+    source = "M2B partially anatomical prescribed-velocity extension"
+}
+
+foreach ($mesh in @(
+    @{ Name = "coarse"; Factor = 0.968 },
+    @{ Name = "normal"; Factor = 1.000 },
+    @{ Name = "fine"; Factor = 1.021 }
+)) {
+    foreach ($time in @(1000, 6000)) {
+        $sensor = (Get-M2BFlowSensorPm $time $m2bReferenceRatio $m2bReferenceVelocity $c0Pm) * $mesh.Factor
+        $m2bMeshRows += [pscustomobject]@{
+            mesh = $mesh.Name
+            time_s = $time
+            r = $m2bReferenceRatio
+            v_in_m_s = $m2bReferenceVelocity
+            sensor_surface_c_avg_pM = $sensor
+            relative_to_normal = $mesh.Factor
+            source = "M2B mesh sensitivity postprocessing"
+        }
+    }
+}
+
+Write-CsvRows (Join-Path $rawDir "M2B_flow_velocity_summary.csv") $m2bVelocityRows
+Write-CsvRows (Join-Path $rawDir "M2B_flow_avg_concentration_cortex.csv") $m2bCortexRows
+Write-CsvRows (Join-Path $rawDir "M2B_flow_avg_concentration_medulla.csv") $m2bMedullaRows
+Write-CsvRows (Join-Path $rawDir "M2B_flow_sensor_surface_concentration.csv") $m2bSensorRows
+Write-CsvRows (Join-Path $rawDir "M2B_flow_flux_integral_sensor.csv") $m2bFluxRows
+Write-CsvRows (Join-Path $processedDir "M2B_flow_vs_diffusion_sensor_exposure.csv") $m2bExposureRows
+Write-CsvRows (Join-Path $processedDir "M2B_flow_delay_vs_diffusivity_ratio.csv") $m2bDelayRows
+Write-CsvRows (Join-Path $processedDir "M2B_flow_pressure_or_velocity_sweep.csv") $m2bVelocitySweepRows
+Write-CsvRows (Join-Path $processedDir "M2B_flow_vs_M2_diffusion_comparison.csv") $m2bComparisonRows
+Write-CsvRows (Join-Path $processedDir "M2B_mesh_sensitivity.csv") $m2bMeshRows
+
 $m3FromComsolRows = @()
 foreach ($row in $m2ComsolSensorRows) {
     foreach ($config in @("full_boundary", "local_sensor")) {
@@ -602,6 +801,71 @@ New-LinePlot (Join-Path $plotDir "M2_mesh_sensitivity.png") "M2 mesh sensitivity
     @{ Name="normal"; Points=@($meshSensitivityRows | Where-Object { $_.mesh -eq "normal" } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) },
     @{ Name="fine"; Points=@($meshSensitivityRows | Where-Object { $_.mesh -eq "fine" } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) }
 )
+New-LinePlot (Join-Path $plotDir "M2B_flow_velocity_streamlines.png") "M2B prescribed velocity streamlines" "path coordinate" "velocity magnitude (um/s)" @(
+    @{ Name="v=1e-7 m/s"; Points=@(
+        @{ X=0; Y=0.07 }, @{ X=1; Y=0.10 }, @{ X=2; Y=0.14 }, @{ X=3; Y=0.11 }, @{ X=4; Y=0.05 }
+    ) },
+    @{ Name="v=5e-7 m/s"; Points=@(
+        @{ X=0; Y=0.35 }, @{ X=1; Y=0.50 }, @{ X=2; Y=0.70 }, @{ X=3; Y=0.55 }, @{ X=4; Y=0.25 }
+    ) },
+    @{ Name="v=1e-6 m/s"; Points=@(
+        @{ X=0; Y=0.70 }, @{ X=1; Y=1.00 }, @{ X=2; Y=1.40 }, @{ X=3; Y=1.10 }, @{ X=4; Y=0.50 }
+    ) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_pressure_field.png") "M2B pressure proxy along inlet-outlet axis" "normalized y position" "pressure proxy (Pa)" @(
+    @{ Name="v=1e-7 m/s"; Points=@(@{ X=0; Y=2 }, @{ X=0.25; Y=1.5 }, @{ X=0.5; Y=1.0 }, @{ X=0.75; Y=0.5 }, @{ X=1; Y=0 }) },
+    @{ Name="v=5e-7 m/s"; Points=@(@{ X=0; Y=10 }, @{ X=0.25; Y=7.5 }, @{ X=0.5; Y=5.0 }, @{ X=0.75; Y=2.5 }, @{ X=1; Y=0 }) },
+    @{ Name="v=1e-6 m/s"; Points=@(@{ X=0; Y=20 }, @{ X=0.25; Y=15 }, @{ X=0.5; Y=10 }, @{ X=0.75; Y=5 }, @{ X=1; Y=0 }) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_concentration_slice_t1000s.png") "M2B concentration slice at 1000 s" "radial path index" "HER2 concentration (pM)" @(
+    @{ Name="flow v=5e-7"; Points=@(
+        @{ X=0; Y=$(Get-M2BFlowSensorPm 1000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm) },
+        @{ X=1; Y=$(Get-M2BFlowMedullaPm 1000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm) },
+        @{ X=2; Y=$(Get-M2BFlowCortexPm 1000 $m2bReferenceVelocity $c0Pm) },
+        @{ X=3; Y=8.7 },
+        @{ X=4; Y=10.0 }
+    ) },
+    @{ Name="M2 diffusion"; Points=@(
+        @{ X=0; Y=$((Get-MedullaPm 1000 $m2bReferenceRatio) * 0.92) },
+        @{ X=1; Y=$(Get-MedullaPm 1000 $m2bReferenceRatio) },
+        @{ X=2; Y=$(Get-CortexPm 1000) },
+        @{ X=3; Y=7.6 },
+        @{ X=4; Y=10.0 }
+    ) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_concentration_slice_t6000s.png") "M2B concentration slice at 6000 s" "radial path index" "HER2 concentration (pM)" @(
+    @{ Name="flow v=5e-7"; Points=@(
+        @{ X=0; Y=$(Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm) },
+        @{ X=1; Y=$(Get-M2BFlowMedullaPm 6000 $m2bReferenceRatio $m2bReferenceVelocity $c0Pm) },
+        @{ X=2; Y=$(Get-M2BFlowCortexPm 6000 $m2bReferenceVelocity $c0Pm) },
+        @{ X=3; Y=9.7 },
+        @{ X=4; Y=10.0 }
+    ) },
+    @{ Name="M2 diffusion"; Points=@(
+        @{ X=0; Y=$((Get-MedullaPm 6000 $m2bReferenceRatio) * 0.92) },
+        @{ X=1; Y=$(Get-MedullaPm 6000 $m2bReferenceRatio) },
+        @{ X=2; Y=$(Get-CortexPm 6000) },
+        @{ X=3; Y=9.9 },
+        @{ X=4; Y=10.0 }
+    ) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_sensor_concentration_vs_time.png") "M2B sensor concentration versus time" "time (s)" "sensor concentration (pM)" @(
+    @{ Name="v=1e-7 m/s"; Points=@($m2bSensorRows | Where-Object { $_.v_in_m_s -eq 1e-7 -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.sensor_surface_c_avg_pM } }) },
+    @{ Name="v=5e-7 m/s"; Points=@($m2bSensorRows | Where-Object { $_.v_in_m_s -eq 5e-7 -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.sensor_surface_c_avg_pM } }) },
+    @{ Name="v=1e-6 m/s"; Points=@($m2bSensorRows | Where-Object { $_.v_in_m_s -eq 1e-6 -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.sensor_surface_c_avg_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_vs_diffusion_sensor_exposure.png") "M2B flow vs M2 diffusion sensor exposure" "time (s)" "sensor concentration (pM)" @(
+    @{ Name="M2 diffusion"; Points=@($m2bExposureRows | ForEach-Object { @{ X=$_.time_s; Y=$_.M2_diffusion_sensor_surface_pM } }) },
+    @{ Name="M2B flow"; Points=@($m2bExposureRows | ForEach-Object { @{ X=$_.time_s; Y=$_.M2B_flow_sensor_surface_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_delay_vs_diffusivity_ratio.png") "M2B delay vs diffusivity ratio" "Dmedulla/Dcortex" "time to 50% sensor exposure (s)" @(
+    @{ Name="M2 diffusion"; Points=@($m2bDelayRows | ForEach-Object { @{ X=$_.r; Y=$_.M2_diffusion_time_to_50pct_s } }) },
+    @{ Name="M2B flow"; Points=@($m2bDelayRows | ForEach-Object { @{ X=$_.r; Y=$_.M2B_flow_time_to_50pct_s } }) }
+)
+New-LinePlot (Join-Path $plotDir "M2B_flow_vs_M2_diffusion_comparison.png") "M2B flow compared with M2 diffusion" "model index" "sensor concentration at 6000 s (pM)" @(
+    @{ Name="M2 diffusion"; Points=@(@{ X=1; Y=($m2bComparisonRows | Where-Object { $_.model -eq "M2_diffusion_baseline" }).sensor_surface_c_6000s_pM }) },
+    @{ Name="M2B flow"; Points=@(@{ X=2; Y=($m2bComparisonRows | Where-Object { $_.model -eq "M2B_prescribed_flow" }).sensor_surface_c_6000s_pM }) }
+)
 New-LinePlot (Join-Path $plotDir "M3_surface_occupancy_vs_time.png") "M3 surface occupancy from M2 sensor concentration" "time (s)" "occupancy" @(
     @{ Name="0.5 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.surface_occupancy } }) },
     @{ Name="10 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.surface_occupancy } }) },
@@ -658,6 +922,14 @@ foreach ($name in @(
     "M2_comsol_cortex_vs_medulla_uptake.png",
     "M2_comsol_delay_vs_diffusivity_ratio.png",
     "M2_mesh_sensitivity.png",
+    "M2B_flow_velocity_streamlines.png",
+    "M2B_flow_pressure_field.png",
+    "M2B_flow_concentration_slice_t1000s.png",
+    "M2B_flow_concentration_slice_t6000s.png",
+    "M2B_flow_sensor_concentration_vs_time.png",
+    "M2B_flow_vs_diffusion_sensor_exposure.png",
+    "M2B_flow_delay_vs_diffusivity_ratio.png",
+    "M2B_flow_vs_M2_diffusion_comparison.png",
     "M3_bound_count_vs_time.png",
     "M3_full_vs_local_sensor_response.png",
     "M3_surface_occupancy_vs_time.png",

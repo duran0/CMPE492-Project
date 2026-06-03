@@ -1,0 +1,3 @@
+﻿"model","r","v_in_m_s","time_to_50pct_s","sensor_surface_c_1000s_pM","sensor_surface_c_6000s_pM","source"
+"M2_diffusion_baseline","0.5","0","5337.23329031158","1.12047281441867","4.97937718000608","Preserved M2 diffusion-only baseline"
+"M2B_prescribed_flow","0.5","5E-07","1732.86795139986","3.16492755805786","8.72910764842164","M2B partially anatomical prescribed-velocity extension"

@@ -1,0 +1,43 @@
+*******************************************
+***COMSOL 6.2.0.339 progress output file***
+*******************************************
+Thu Jun 04 00:04:29 TRT 2026
+COMSOL Multiphysics 6.2 (Build: 339) starting in batch mode
+Running: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2B_anatomical_flow_lymphnode_v01.class
+---------- Current Progress: 100 % - Updating selections
+Memory: 481/481 521/521
+           Current Progress:   0 % - domain_subcapsular_sinus_and_cortex_outer_node
+Memory: 488/488 527/527
+           Current Progress:   5 % - domain_cortex_inner_sinus_reference
+Memory: 498/498 533/538
+-          Current Progress:  11 % - domain_medulla
+-          Current Progress:  16 % - boundary_afferent_inlet_1_marker
+--         Current Progress:  21 % - boundary_afferent_inlet_2_marker
+--         Current Progress:  26 % - boundary_afferent_inlet_3_marker
+---        Current Progress:  32 % - boundary_afferent_inlet_4_marker
+---        Current Progress:  37 % - boundary_efferent_outlet_marker
+Memory: 498/498 534/538
+----       Current Progress:  42 % - boundary_sensor_local_marker
+----       Current Progress:  47 % - Form Union
+----       Current Progress:  47 % - Performing Boolean operation
+Memory: 502/502 536/538
+---------- Current Progress: 100 % - Updating selections
+Number of vertex elements: 90
+--         Current Progress:  22 % - Creating boundary mesh
+Memory: 563/564 584/586
+Number of edge elements: 897
+Number of boundary elements: 7792
+-----      Current Progress:  53 % - Improving element quality
+Memory: 564/564 584/586
+---------  Current Progress:  99 % - Finalizing mesh
+Memory: 567/568 586/588
+Number of elements: 40175
+Minimum element quality: 0.0397
+---------- Current Progress: 100 % - Finalizing mesh
+Memory: 559/568 581/588
+Class run time: 4 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2B_anatomical_flow_lymphnode_v01_Model.mph
+Save time: 0 s.
+Total time: 5 s.
+---------- Current Progress: 100 % - Done
+Memory: 589/592 608/611

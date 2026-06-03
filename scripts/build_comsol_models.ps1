@@ -16,6 +16,7 @@ if (-not (Test-Path $batch)) {
 $models = @(
     @{ Source="comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.java"; Output="comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.mph"; Log="comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.log" },
     @{ Source="comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01.java"; Output="comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01.mph"; Log="comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01.log" },
+    @{ Source="comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.java"; Output="comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph"; Log="comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.log" },
     @{ Source="comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.java"; Output="comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.mph"; Log="comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.log" },
     @{ Source="comsol/models/M3_surface_binding/M3_surface_binding_local_sensor_v01.java"; Output="comsol/models/M3_surface_binding/M3_surface_binding_local_sensor_v01.mph"; Log="comsol/models/M3_surface_binding/M3_surface_binding_local_sensor_v01.log" },
     @{ Source="comsol/models/M4_gfet_response/M4_gfet_current_response_v01.java"; Output="comsol/models/M4_gfet_response/M4_gfet_current_response_v01.mph"; Log="comsol/models/M4_gfet_response/M4_gfet_current_response_v01.log" }

@@ -1,0 +1,4 @@
+﻿"v_in_m_s","pressure_proxy_drop_Pa","sensor_time_to_50pct_s","sensor_surface_c_6000s_pM","source"
+"1E-07","2","3311.52104306425","6.8656874049988","M2B velocity sweep"
+"5E-07","10","1732.86795139986","8.72910764842164","M2B velocity sweep"
+"1E-06","20","1381.32602450451","9.12717373621639","M2B velocity sweep"

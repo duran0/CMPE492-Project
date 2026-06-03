@@ -21,6 +21,10 @@ All calculations use SI units internally. Report-friendly units are included for
 | Diffusivity ratio | r | 0.1, 0.25, 0.5, 0.75, 1.0 | same | - | Required sweep. |
 | Medulla diffusion coefficient | Dmedulla | r * Dcortex | r * 8e-11 | m^2/s | Lower medulla diffusivity delays uptake. |
 | Baseline inlet concentration | c0 | 10 pM | 1e-8 | mol/m^3 | Baseline transport exposure. |
+| M2B prescribed inlet velocity | v_in | 1e-7, 5e-7, 1e-6 | same | m/s | Flow-extension sweep; not a validated Darcy-flow result. |
+| M2B node radius | R_node | 500 um | 500e-6 | m | Simplified lymph-node-inspired scaffold radius. |
+| M2B medulla radius | R_medulla | 250 um | 250e-6 | m | Simplified inner-region radius. |
+| M2B local sensor radius | R_sensor | 30 um | 30e-6 | m | Local sensor marker used for exposure and flux proxy. |
 | Simulation time | tmax | 6000 | 6000 | s | Exported at fixed report time points. |
 | Time points | t | 0, 100, 500, 1000, 2000, 4000, 6000 | same | s | Shared across stages. |
 

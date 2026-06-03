@@ -38,6 +38,45 @@ The meshed single-case solve reports 3103 degrees of freedom plus internal DOFs 
 
 The `M2_comsol_*` CSV files are COMSOL-stage post-processing outputs tied to the meshed TDS model, sweep parameters, and exported solver logs. Direct COMSOL field-table export from the solved `.mph` is not yet automated, so final report text should describe these files as COMSOL-stage post-processed transport metrics rather than raw COMSOL field probes.
 
+## Stage M2B: Partially Anatomical Flow Extension
+
+The flow extension is implemented separately from the preserved M2 diffusion-only baseline:
+
+```text
+comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.java
+comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph
+```
+
+Current model configuration:
+
+- Geometry: simplified lymph-node-inspired sphere with subcapsular sinus, cortex, and medulla reference regions.
+- Boundary markers: four afferent inlet markers, one efferent outlet marker, capsule no-flow marker, local sensor marker, and full sensor marker.
+- Named selections: `domain_subcapsular_sinus`, `domain_cortex`, `domain_medulla`, `boundary_afferent_inlet_1` through `boundary_afferent_inlet_4`, `boundary_efferent_outlet`, `boundary_capsule_no_flow`, `boundary_sensor_local`, and `boundary_sensor_full`.
+- Transport assumption: prescribed-velocity convection-diffusion extension rather than a fully solved Darcy-flow model.
+- Velocity sweep: `v_in = 1e-7, 5e-7, 1e-6 m/s`.
+- Diffusivity sweep: `r = Dmedulla/Dcortex = 0.1, 0.25, 0.5, 0.75, 1.0`.
+- Time points: `0, 100, 500, 1000, 2000, 4000, 6000 s`.
+
+Batch evidence:
+
+- `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph`
+- `comsol/models/M2_3D_transport/solver_logs/M2B_anatomical_flow_lymphnode_v01_build.txt`
+
+Exported M2B tables:
+
+- `results/raw_csv/M2B_flow_velocity_summary.csv`
+- `results/raw_csv/M2B_flow_avg_concentration_cortex.csv`
+- `results/raw_csv/M2B_flow_avg_concentration_medulla.csv`
+- `results/raw_csv/M2B_flow_sensor_surface_concentration.csv`
+- `results/raw_csv/M2B_flow_flux_integral_sensor.csv`
+- `results/processed_csv/M2B_flow_vs_diffusion_sensor_exposure.csv`
+- `results/processed_csv/M2B_flow_delay_vs_diffusivity_ratio.csv`
+- `results/processed_csv/M2B_flow_pressure_or_velocity_sweep.csv`
+- `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv`
+- `results/processed_csv/M2B_mesh_sensitivity.csv`
+
+The M2B outputs support a limited comparison claim: prescribed flow increases sensor exposure and reduces arrival delay relative to the diffusion-only M2 baseline under the selected assumptions. They do not claim a fully anatomically correct lymph-node model, a validated Darcy-flow solve, or clinical performance.
+
 ## Stage M3: Surface Binding
 
 Surface binding is recomputed from:
