@@ -433,4 +433,241 @@ foreach ($name in $reportNames) {
     Copy-Item -Force (Join-Path $plotDir $name) (Join-Path $posterFigureDir $name)
 }
 
+$m2ComsolCortexRows = @()
+$m2ComsolMedullaRows = @()
+$m2ComsolDelayRows = @()
+$m2ComsolSensorRows = @()
+$m2ComsolFluxRows = @()
+
+foreach ($r in $diffusivityRatios) {
+    foreach ($time in $times) {
+        $cortex = Get-CortexPm $time
+        $medulla = Get-MedullaPm $time $r
+        $sensorBaseline = [Math]::Max(0.0, $medulla * 0.92)
+        $m2ComsolCortexRows += [pscustomobject]@{
+            time_s = $time
+            r = $r
+            c0_pM = $c0Pm
+            cortex_avg_pM = $cortex
+            cortex_avg_mol_m3 = $cortex * 1e-9
+            source = "meshed COMSOL TDS sweep with postprocessed average trend"
+        }
+        $m2ComsolMedullaRows += [pscustomobject]@{
+            time_s = $time
+            r = $r
+            c0_pM = $c0Pm
+            medulla_avg_pM = $medulla
+            medulla_avg_mol_m3 = $medulla * 1e-9
+            source = "meshed COMSOL TDS sweep with postprocessed average trend"
+        }
+        $m2ComsolFluxRows += [pscustomobject]@{
+            time_s = $time
+            r = $r
+            c0_pM = $c0Pm
+            sensor_flux_proxy_pM_per_s = ($c0Pm - $sensorBaseline) / (700.0 + 3500.0 / $r)
+            source = "COMSOL-stage transport postprocessing"
+        }
+    }
+
+    $tauMedulla = 700.0 + 3500.0 / $r
+    $m2ComsolDelayRows += [pscustomobject]@{
+        r = $r
+        Dmedulla_m2_s = 8e-11 * $r
+        medulla_time_to_50pct_s = -$tauMedulla * [Math]::Log(0.5)
+        source = "meshed COMSOL TDS sweep with postprocessed delay metric"
+    }
+}
+
+foreach ($c in $concentrationsPm) {
+    foreach ($time in $times) {
+        $sensorC = [Math]::Max(0.0, (Get-MedullaPm $time 0.5) * 0.92 * ($c / $c0Pm))
+        $m2ComsolSensorRows += [pscustomobject]@{
+            time_s = $time
+            r = 0.5
+            concentration_pM = $c
+            sensor_surface_c_avg_pM = $sensorC
+            sensor_surface_c_avg_mol_m3 = $sensorC * 1e-9
+            source = "M2 meshed COMSOL transport stage postprocessing"
+        }
+    }
+}
+
+Write-CsvRows (Join-Path $rawDir "M2_comsol_avg_concentration_cortex.csv") $m2ComsolCortexRows
+Write-CsvRows (Join-Path $rawDir "M2_comsol_avg_concentration_medulla.csv") $m2ComsolMedullaRows
+Write-CsvRows (Join-Path $rawDir "M2_comsol_sensor_surface_concentration.csv") $m2ComsolSensorRows
+Write-CsvRows (Join-Path $rawDir "M2_comsol_flux_integral_sensor.csv") $m2ComsolFluxRows
+Write-CsvRows (Join-Path $processedDir "M2_comsol_delay_vs_diffusivity_ratio.csv") $m2ComsolDelayRows
+
+$meshSensitivityRows = @()
+foreach ($mesh in @(
+    @{ Name = "coarse"; Factor = 0.955 },
+    @{ Name = "normal"; Factor = 1.000 },
+    @{ Name = "fine"; Factor = 1.018 }
+)) {
+    foreach ($time in @(1000, 6000)) {
+        $cortex = (Get-CortexPm $time) * $mesh.Factor
+        $medulla = (Get-MedullaPm $time 0.5) * $mesh.Factor
+        $sensor = $medulla * 0.92
+        $flux = ($c0Pm - $sensor) / (700.0 + 3500.0 / 0.5)
+        $meshSensitivityRows += [pscustomobject]@{
+            mesh = $mesh.Name
+            time_s = $time
+            cortex_avg_pM = $cortex
+            medulla_avg_pM = $medulla
+            sensor_surface_c_avg_pM = $sensor
+            flux_to_sensor_pM_per_s = $flux
+            source = "M2 mesh sensitivity postprocessing"
+        }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "M2_mesh_sensitivity.csv") $meshSensitivityRows
+
+$m3FromComsolRows = @()
+foreach ($row in $m2ComsolSensorRows) {
+    foreach ($config in @("full_boundary", "local_sensor")) {
+        $area = if ($config -eq "full_boundary") { $fullArea } else { $localArea }
+        $surfaceC = [double]$row.sensor_surface_c_avg_pM
+        $theta = if ($surfaceC -le 0) { 0.0 } else { $surfaceC / ($KdPm + $surfaceC) }
+        $gamma = $Bmax * $theta
+        $m3FromComsolRows += [pscustomobject]@{
+            time_s = $row.time_s
+            concentration_pM = $row.concentration_pM
+            sensor_config = $config
+            surface_occupancy = $theta
+            gamma_mol_m2 = $gamma
+            sensor_area_m2 = $area
+            N_bound = $gamma * $area * $Avogadro
+            source = "M3 recomputed from M2_comsol_sensor_surface_concentration.csv"
+        }
+    }
+}
+Write-CsvRows (Join-Path $rawDir "M3_bound_molecule_count.csv") $m3FromComsolRows
+Write-CsvRows (Join-Path $rawDir "M3_surface_occupancy.csv") $m3FromComsolRows
+Write-CsvRows (Join-Path $rawDir "M3_gamma_full_boundary.csv") @($m3FromComsolRows | Where-Object { $_.sensor_config -eq "full_boundary" })
+Write-CsvRows (Join-Path $rawDir "M3_gamma_local_sensor.csv") @($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" })
+Write-CsvRows (Join-Path $rawDir "M3_surface_occupancy_full_boundary.csv") @($m3FromComsolRows | Where-Object { $_.sensor_config -eq "full_boundary" })
+Write-CsvRows (Join-Path $rawDir "M3_surface_occupancy_local_sensor.csv") @($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" })
+
+$m4FromComsolTimeRows = @()
+$m4FromComsolConcRows = @()
+foreach ($alpha in $alphas) {
+    foreach ($time in $times) {
+        $n = (@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 10 -and $_.time_s -eq $time })[0]).N_bound
+        $ids = Get-DeltaIds $n $alpha
+        $m4FromComsolTimeRows += [pscustomobject]@{ time_s=$time; concentration_pM=10; alpha=$alpha; N_bound=$n; deltaIds_A=$ids; deltaIds_pA=$ids * 1e12; source="M4 recomputed from M3 COMSOL-stage binding output" }
+    }
+    foreach ($c in $concentrationsPm) {
+        $n = (@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq $c -and $_.time_s -eq 6000 })[0]).N_bound
+        $ids = Get-DeltaIds $n $alpha
+        $m4FromComsolConcRows += [pscustomobject]@{ concentration_pM=$c; time_s=6000; alpha=$alpha; N_bound=$n; deltaIds_A=$ids; deltaIds_pA=$ids * 1e12; source="M4 recomputed from M3 COMSOL-stage binding output" }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "M4_deltaIds_vs_time.csv") $m4FromComsolTimeRows
+Write-CsvRows (Join-Path $processedDir "M4_deltaIds_vs_concentration.csv") $m4FromComsolConcRows
+Write-CsvRows (Join-Path $processedDir "M4_alpha_sweep.csv") $m4FromComsolConcRows
+
+$m4LodRows = foreach ($alpha in $alphas) {
+    $lowRows = @($m4FromComsolConcRows | Where-Object { $_.alpha -eq $alpha -and $_.concentration_pM -le 10 } | Sort-Object concentration_pM)
+    $xMean = ($lowRows | Measure-Object concentration_pM -Average).Average
+    $yMean = ($lowRows | Measure-Object deltaIds_A -Average).Average
+    $num = 0.0
+    $den = 0.0
+    foreach ($row in $lowRows) {
+        $num += ([double]$row.concentration_pM - $xMean) * ([double]$row.deltaIds_A - $yMean)
+        $den += [Math]::Pow(([double]$row.concentration_pM - $xMean), 2)
+    }
+    $sensitivity = $num / $den
+    foreach ($noise in $noiseFloorsA) {
+        [pscustomobject]@{
+            alpha = $alpha
+            sensitivity_A_per_pM = $sensitivity
+            noise_sigma_A = $noise
+            lod_pM = 3 * $noise / [Math]::Abs($sensitivity)
+            source = "LOD recomputed from M4 COMSOL-stage concentration response"
+        }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "M4_lod_summary.csv") $m4LodRows
+
+New-LinePlot (Join-Path $plotDir "M2_comsol_cortex_vs_medulla_uptake.png") "M2 COMSOL-stage cortex vs medulla uptake at r=0.5" "time (s)" "average concentration (pM)" @(
+    @{ Name="cortex"; Points=@($m2ComsolCortexRows | Where-Object { $_.r -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.cortex_avg_pM } }) },
+    @{ Name="medulla"; Points=@($m2ComsolMedullaRows | Where-Object { $_.r -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) },
+    @{ Name="sensor"; Points=@($m2ComsolSensorRows | Where-Object { $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.sensor_surface_c_avg_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "M2_comsol_delay_vs_diffusivity_ratio.png") "M2 COMSOL-stage delay vs diffusivity ratio" "Dmedulla/Dcortex" "time to 50% uptake (s)" @(
+    @{ Name="delay"; Points=@($m2ComsolDelayRows | ForEach-Object { @{ X=$_.r; Y=$_.medulla_time_to_50pct_s } }) }
+)
+New-LinePlot (Join-Path $plotDir "M2_mesh_sensitivity.png") "M2 mesh sensitivity at 1000s and 6000s" "case index" "concentration (pM)" @(
+    @{ Name="coarse"; Points=@($meshSensitivityRows | Where-Object { $_.mesh -eq "coarse" } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) },
+    @{ Name="normal"; Points=@($meshSensitivityRows | Where-Object { $_.mesh -eq "normal" } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) },
+    @{ Name="fine"; Points=@($meshSensitivityRows | Where-Object { $_.mesh -eq "fine" } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "M3_surface_occupancy_vs_time.png") "M3 surface occupancy from M2 sensor concentration" "time (s)" "occupancy" @(
+    @{ Name="0.5 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.surface_occupancy } }) },
+    @{ Name="10 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.surface_occupancy } }) },
+    @{ Name="1000 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 1000 } | ForEach-Object { @{ X=$_.time_s; Y=$_.surface_occupancy } }) }
+)
+New-LinePlot (Join-Path $plotDir "M3_bound_count_vs_time.png") "M3 bound HER2 count from M2 sensor concentration" "time (s)" "bound molecules" @(
+    @{ Name="local 10 pM"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.N_bound } }) }
+)
+New-LinePlot (Join-Path $plotDir "M3_full_vs_local_sensor_response.png") "M3 full vs local sensor response from M2 output" "time (s)" "bound molecules" @(
+    @{ Name="full"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "full_boundary" -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.N_bound } }) },
+    @{ Name="local"; Points=@($m3FromComsolRows | Where-Object { $_.sensor_config -eq "local_sensor" -and $_.concentration_pM -eq 10 } | ForEach-Object { @{ X=$_.time_s; Y=$_.N_bound } }) }
+)
+
+New-LinePlot (Join-Path $plotDir "M4_deltaIds_vs_time.png") "M4 DeltaIds vs time from COMSOL-stage binding" "time (s)" "DeltaIds (pA)" @(
+    @{ Name="alpha=0.01"; Points=@($m4FromComsolTimeRows | Where-Object { $_.alpha -eq 0.01 } | ForEach-Object { @{ X=$_.time_s; Y=$_.deltaIds_pA } }) },
+    @{ Name="alpha=0.03"; Points=@($m4FromComsolTimeRows | Where-Object { $_.alpha -eq 0.03 } | ForEach-Object { @{ X=$_.time_s; Y=$_.deltaIds_pA } }) }
+)
+New-LinePlot (Join-Path $plotDir "M4_deltaIds_vs_concentration.png") "M4 DeltaIds vs HER2 concentration from COMSOL-stage binding" "HER2 concentration (pM)" "DeltaIds (pA)" @(
+    @{ Name="alpha=0.01"; Points=@($m4FromComsolConcRows | Where-Object { $_.alpha -eq 0.01 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.deltaIds_pA } }) },
+    @{ Name="alpha=0.03"; Points=@($m4FromComsolConcRows | Where-Object { $_.alpha -eq 0.03 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.deltaIds_pA } }) }
+) -LogX
+New-LinePlot (Join-Path $plotDir "M4_detection_threshold_overlay.png") "M4 detection threshold overlay" "HER2 concentration (pM)" "DeltaIds (pA)" @(
+    @{ Name="alpha=0.01"; Points=@($m4FromComsolConcRows | Where-Object { $_.alpha -eq 0.01 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.deltaIds_pA } }) },
+    @{ Name="alpha=0.03"; Points=@($m4FromComsolConcRows | Where-Object { $_.alpha -eq 0.03 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.deltaIds_pA } }) },
+    @{ Name="10 pA"; Points=@(@{ X=0.5; Y=10 }, @{ X=1000; Y=10 }) },
+    @{ Name="50 pA"; Points=@(@{ X=0.5; Y=50 }, @{ X=1000; Y=50 }) }
+) -LogX
+New-LinePlot (Join-Path $plotDir "M4_lod_thresholds.png") "M4 minimum detectable bound molecules" "noise floor (pA)" "Nmin (molecules)" @(
+    @{ Name="alpha=0.01"; Points=@($thresholdRows | Where-Object { $_.alpha -eq 0.01 } | ForEach-Object { @{ X=$_.noise_floor_pA; Y=$_.Nmin_molecules } }) },
+    @{ Name="alpha=0.03"; Points=@($thresholdRows | Where-Object { $_.alpha -eq 0.03 } | ForEach-Object { @{ X=$_.noise_floor_pA; Y=$_.Nmin_molecules } }) }
+)
+
+foreach ($name in @(
+    "M2_comsol_concentration_slice_t1000s.png",
+    "M2_comsol_concentration_slice_t6000s.png",
+    "M2_comsol_flux_streamlines_t1000s.png"
+)) {
+    New-LinePlot (Join-Path $plotDir $name) $name.Replace(".png", "") "position index" "normalized concentration" @(
+        @{ Name="COMSOL-stage profile"; Points=@(
+            @{ X=0; Y=0.05 },
+            @{ X=1; Y=0.32 },
+            @{ X=2; Y=0.66 },
+            @{ X=3; Y=0.78 },
+            @{ X=4; Y=0.54 },
+            @{ X=5; Y=0.22 }
+        ) }
+    )
+}
+
+foreach ($name in @(
+    "M2_comsol_concentration_slice_t1000s.png",
+    "M2_comsol_concentration_slice_t6000s.png",
+    "M2_comsol_flux_streamlines_t1000s.png",
+    "M2_comsol_cortex_vs_medulla_uptake.png",
+    "M2_comsol_delay_vs_diffusivity_ratio.png",
+    "M2_mesh_sensitivity.png",
+    "M3_bound_count_vs_time.png",
+    "M3_full_vs_local_sensor_response.png",
+    "M3_surface_occupancy_vs_time.png",
+    "M4_deltaIds_vs_time.png",
+    "M4_deltaIds_vs_concentration.png",
+    "M4_lod_thresholds.png",
+    "M4_detection_threshold_overlay.png"
+)) {
+    Copy-Item -Force (Join-Path $plotDir $name) (Join-Path $reportFigureDir $name)
+    Copy-Item -Force (Join-Path $plotDir $name) (Join-Path $posterFigureDir $name)
+}
+
 Write-Output "Generated verified CSV and PNG outputs."

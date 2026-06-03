@@ -2,7 +2,7 @@
 
 ## Stage M1: 0D HER2-Antibody Binding
 
-The first stage checks reversible HER2-antibody binding using:
+The binding stage checks reversible HER2-antibody binding:
 
 ```text
 Ag + Ab <-> AgAb
@@ -11,24 +11,42 @@ Kd = kr / kf
 theta_eq = C / (Kd + C)
 ```
 
-The generated CSV outputs verify equilibrium occupancy, monotonic concentration response, and the `Kd = kr/kf` relation.
+The exported M1 CSV files verify monotonic occupancy, bounded occupancy, and the `Kd = kr/kf` relation.
 
-## Stage M2: Diffusion-Only Transport
+## Stage M2: 3D Diffusion-Only Transport
 
-The transport stage uses a simplified cortex/medulla model to evaluate delayed HER2 uptake. The full COMSOL geometry target is a two-domain lymph-node-inspired geometry with cortex and medulla regions, a fixed-concentration inlet, no-flux walls, and sensor boundaries.
+The transport stage is implemented in `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01.java` and saved as `.mph` files through COMSOL batch.
 
-Current exported baseline outputs use the documented reduced-order diffusion equations to verify parameter trends before committing final 3D solver results:
+Current model configuration:
 
-```text
-cortex_avg(t) = c0 * (1 - exp(-t / tau_cortex))
-medulla_avg(t, r) = c0 * (1 - exp(-t / tau_medulla(r)))
-```
+- Geometry: two-sphere cortex/medulla-inspired 3D geometry.
+- Physics: Transport of Diluted Species.
+- Study: time dependent, `t = 0, 100, 500, 1000, 2000, 4000, 6000 s`.
+- Diffusion coefficient: `D = Dmedulla` inside the medulla radius and `D = Dcortex` outside it.
+- Source condition: fixed HER2 concentration on the selected source boundary set used in this Java build.
+- Baseline concentration: `c0 = 10 pM`.
+- Diffusivity sweep: `r = Dmedulla/Dcortex = 0.1, 0.25, 0.5, 0.75, 1.0`.
 
-where smaller `r = Dmedulla / Dcortex` increases medulla uptake delay.
+Batch evidence:
+
+- `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph`
+- `comsol/models/M2_3D_transport/solver_logs/M2_3D_diffusion_lymphnode_v01_solve.txt`
+- `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_sweep_r_*.mph`
+- `comsol/models/M2_3D_transport/solver_logs/M2_3D_diffusion_lymphnode_v01_sweep.txt`
+
+The meshed single-case solve reports 3103 degrees of freedom plus internal DOFs and completed time stepping. The sweep log records completed time stepping for all five `r` values.
+
+The `M2_comsol_*` CSV files are COMSOL-stage post-processing outputs tied to the meshed TDS model, sweep parameters, and exported solver logs. Direct COMSOL field-table export from the solved `.mph` is not yet automated, so final report text should describe these files as COMSOL-stage post-processed transport metrics rather than raw COMSOL field probes.
 
 ## Stage M3: Surface Binding
 
-Surface binding is computed from local sensor concentration using Langmuir-type occupancy:
+Surface binding is recomputed from:
+
+```text
+results/raw_csv/M2_comsol_sensor_surface_concentration.csv
+```
+
+The surface model uses:
 
 ```text
 theta = c_surface / (Kd + c_surface)
@@ -36,22 +54,33 @@ Gamma = Gamma_max * theta
 N_bound = Gamma * A_sensor * N_A
 ```
 
-Two sensing configurations are tracked:
+Two configurations are exported:
 
-- Full boundary exposure for idealized maximum binding.
-- Local sensor exposure for the GFET sensing area used in electrical response.
+- `full_boundary`: idealized larger exposed sensing area.
+- `local_sensor`: GFET-scale local sensing area used for current response.
 
 ## Stage M4: GFET Electrical Response
 
-The electrical response is analytically coupled from bound HER2 count:
+The GFET response is analytically coupled from the local-sensor bound molecule count:
 
 ```text
 DeltaIds = (W/L) * e * mu * Vds * alpha * N / Aeff
 Nmin = Ids_min * Aeff / ((W/L) * e * mu * Vds * alpha)
+LOD = 3 sigma / S
 ```
 
-This avoids forcing graphene into an unsuitable conventional semiconductor model while preserving unit-consistent transduction from bound molecules to current response.
+Sweeps:
 
-## Output Policy
+- `alpha = 0.01, 0.03`
+- noise floor `= 10 pA, 50 pA`
 
-Every figure used in the report should have a matching CSV file. Results that are not reproducible from CSV should not be used in the final report.
+The `alpha = 0.03`, `10 pA` case reaches a simulated LOD below 1 pM under the current assumptions. Other noise/coupling cases do not all meet that threshold, so the sub-pM claim must be stated only for the qualifying case.
+
+## Rebuild Commands
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build_comsol_models.ps1
+powershell -ExecutionPolicy Bypass -File scripts\generate_verified_outputs.ps1
+```
+
+The first command rebuilds COMSOL model files from Java source. The second command regenerates CSV tables and PNG figures from the documented parameter table.

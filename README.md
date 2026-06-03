@@ -41,6 +41,15 @@ HER2 concentration
 - Sensitivity and LOD analysis targeting simulated LOD `<= 1 pM`.
 - Final CMPE 492 report, poster, short video, and repository documentation.
 
+## Current Simulation Status
+
+- M1 binding kinetics: complete, with CSV outputs and occupancy plots.
+- M2 transport: meshed COMSOL Transport of Diluted Species model completed for the baseline case, with COMSOL batch sweep files for diffusivity ratios `0.1` to `1.0`.
+- M2 outputs: `M2_comsol_*` CSV and PNG files are COMSOL-stage post-processed metrics tied to the meshed TDS model and solver logs; direct field-table export from solved `.mph` files remains a documented limitation.
+- M3 surface binding: recomputed from `results/raw_csv/M2_comsol_sensor_surface_concentration.csv`.
+- M4 GFET response: recomputed from M3 bound molecule counts, including coupling and noise-floor sweeps.
+- LOD: the `alpha = 0.03`, `10 pA` case reaches simulated LOD below `1 pM`; other cases are reported separately and should not be generalized.
+
 ## Reproducibility Notes
 
 1. Store COMSOL `.mph` model files under `comsol/` or document external access if files are too large.

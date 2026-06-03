@@ -1,0 +1,7 @@
+﻿"mesh","time_s","cortex_avg_pM","medulla_avg_pM","sensor_surface_c_avg_pM","flux_to_sensor_pM_per_s","source"
+"coarse","1000","7.26133260198104","1.1630994975759","1.07005153776983","0.0011597335665234","M2 mesh sensitivity postprocessing"
+"coarse","6000","9.54819083056903","5.16881000750631","4.75530520690581","0.000681129193908337","M2 mesh sensitivity postprocessing"
+"normal","1000","7.60348963558224","1.21790523306377","1.12047281441867","0.0011531853487768","M2 mesh sensitivity postprocessing"
+"normal","6000","9.99810558174767","5.41236650000661","4.97937718000608","0.000652028937661548","M2 mesh sensitivity postprocessing"
+"fine","1000","7.74035244902272","1.23982752725892","1.14064132507821","0.00115056606167815","M2 mesh sensitivity postprocessing"
+"fine","6000","10.1780714822191","5.50978909700673","5.06900596924619","0.000640388835162833","M2 mesh sensitivity postprocessing"

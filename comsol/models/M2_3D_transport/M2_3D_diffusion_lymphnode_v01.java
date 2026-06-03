@@ -24,6 +24,9 @@ public class M2_3D_diffusion_lymphnode_v01 {
     model.component("comp1").geom("geom1").feature("medulla").label("domain_medulla_inner_sphere");
     model.component("comp1").geom("geom1").feature("medulla").set("r", "250");
     model.component("comp1").geom("geom1").run();
+    model.component("comp1").mesh().create("mesh1");
+    model.component("comp1").mesh("mesh1").autoMeshSize(4);
+    model.component("comp1").mesh("mesh1").run();
 
     model.component("comp1").selection().create("domain_cortex", "Explicit");
     model.component("comp1").selection("domain_cortex").label("domain_cortex");
@@ -37,6 +40,21 @@ public class M2_3D_diffusion_lymphnode_v01 {
     model.component("comp1").selection("boundary_sensor_full").label("boundary_sensor_full");
     model.component("comp1").selection().create("boundary_sensor_local", "Explicit");
     model.component("comp1").selection("boundary_sensor_local").label("boundary_sensor_local");
+
+    model.component("comp1").physics().create("tds", "DilutedSpecies", "geom1");
+    model.component("comp1").physics("tds").label("Transport of Diluted Species - HER2");
+    model.component("comp1").physics("tds").field("concentration").field("c");
+    model.component("comp1").physics("tds").field("concentration").component(new String[]{"c"});
+    model.component("comp1").physics("tds").feature("cdm1").set("D_c", "if(sqrt(x^2+y^2+z^2)<R_medulla_um*1e-6,Dmedulla,Dcortex)");
+    model.component("comp1").physics("tds").feature("init1").set("initc", "0");
+    model.component("comp1").physics("tds").create("conc1", "Concentration", 2);
+    model.component("comp1").physics("tds").feature("conc1").label("Fixed HER2 source concentration");
+    model.component("comp1").physics("tds").feature("conc1").selection().all();
+    model.component("comp1").physics("tds").feature("conc1").set("c0", "c0_mol_m3");
+
+    model.study().create("std1");
+    model.study("std1").create("time", "Transient");
+    model.study("std1").feature("time").set("tlist", "0 100 500 1000 2000 4000 6000");
 
     return model;
   }

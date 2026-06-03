@@ -11,29 +11,156 @@
 \maketitle
 
 \begin{abstract}
-This report studies a COMSOL-based graphene field-effect transistor biosensor model for HER2 detection. The workflow couples HER2 transport, antibody surface binding, GFET current response, sensitivity analysis, and limit of detection estimation.
+This project develops a simulation workflow for HER2 antigen detection using an antibody-functionalized graphene field-effect transistor (GFET). The model links HER2 transport, antibody binding, bound molecule count, GFET drain-source current modulation, sensitivity, and limit of detection (LOD). The current repository includes a meshed COMSOL Transport of Diluted Species model for the transport stage, analytical surface-binding post-processing, and analytical GFET response calculations. Results are reported with documented limitations rather than experimental validation.
 \end{abstract}
 
 \section{Introduction}
-Describe the HER2 detection problem and the motivation for label-free GFET biosensing.
+HER2 is a clinically important breast cancer biomarker used in prognosis and therapy selection \cite{Slamon1987,Wolff2018}. Conventional HER2 testing workflows such as immunohistochemistry, fluorescence in situ hybridization, and immunoassays are powerful but are not designed for continuous in-body monitoring. This project studies whether HER2 arrival, binding, and electrical transduction can be represented in a reproducible simulation pipeline for a GFET biosensor.
+
+The central modeling question is whether the detection response is limited only by transistor sensitivity or also by antigen transport to the sensing region. The repository therefore separates the workflow into binding kinetics, COMSOL transport, surface binding, and GFET current response.
 
 \section{Background}
-Summarize HER2 biomarkers, antigen-antibody binding, field-effect biosensors, and GFET sensing.
+\subsection{HER2 as a Biomarker}
+HER2 amplification or overexpression is associated with aggressive breast cancer subtypes and is routinely evaluated in clinical decision-making \cite{Slamon1987,Wolff2018}. This study treats HER2 as the target antigen and does not claim clinical validation.
+
+\subsection{Antigen-Antibody Binding}
+The binding stage uses reversible antigen-antibody kinetics:
+\begin{equation}
+Ag + Ab \rightleftharpoons AgAb
+\end{equation}
+\begin{equation}
+r = k_f[Ag][Ab] - k_r[AgAb],
+\end{equation}
+with dissociation constant:
+\begin{equation}
+K_d = \frac{k_r}{k_f}.
+\end{equation}
+For surface binding, the Langmuir occupancy relation is used:
+\begin{equation}
+\theta = \frac{c_{surface}}{K_d + c_{surface}}.
+\end{equation}
+
+\subsection{GFET Biosensing Principle}
+Field-effect biosensors convert local charge perturbations into channel-current changes, following the foundation of ion-sensitive and field-effect sensing \cite{Bergveld1970,Stern2007}. Graphene is attractive because its surface-exposed channel is sensitive to local electrostatic perturbations \cite{Ohno2010,Kuila2011}. This project uses an analytical GFET transduction model rather than a full graphene semiconductor model.
 
 \section{Methodology}
-Describe the kinetic model, transport model, surface binding boundary, and electrical response mapping.
+\subsection{0D Binding Kinetics}
+The M1 stage evaluates equilibrium occupancy across HER2 concentrations of 0.5, 1, 10, 100, and 1000 pM. The baseline assumptions are \(K_d = 10\) pM, \(k_f = 10^7\) 1/(M s), and \(k_r = 10^{-4}\) 1/s.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M1_occupancy_vs_concentration.png}
+\caption{M1 equilibrium occupancy versus HER2 concentration.}
+\label{fig:m1_occupancy}
+\end{figure}
+
+\subsection{3D COMSOL Transport Model}
+The M2 stage uses COMSOL Transport of Diluted Species in a simplified cortex/medulla-inspired 3D geometry. The medulla diffusion coefficient is parameterized by:
+\begin{equation}
+D_{medulla} = rD_{cortex},
+\end{equation}
+where \(r\) is swept over 0.1, 0.25, 0.5, 0.75, and 1.0. The current COMSOL model includes a mesh and time-dependent study with exported times of 0, 100, 500, 1000, 2000, 4000, and 6000 s.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M2_comsol_concentration_slice_t1000s.png}
+\caption{M2 COMSOL-stage concentration profile at 1000 s.}
+\label{fig:m2_profile}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M2_comsol_flux_streamlines_t1000s.png}
+\caption{M2 COMSOL-stage flux visualization at 1000 s.}
+\label{fig:m2_flux}
+\end{figure}
+
+\subsection{Surface Binding Model}
+The M3 stage reads the M2 sensor-surface concentration output and computes surface occupancy, surface-bound density, and bound molecule count:
+\begin{equation}
+\Gamma = \Gamma_{max}\theta,
+\end{equation}
+\begin{equation}
+N_{bound} = \Gamma A_{sensor}N_A.
+\end{equation}
+Two sensing areas are evaluated: full-boundary exposure and local GFET-scale exposure.
+
+\subsection{GFET Current-Response Model}
+The M4 stage maps bound molecule count to current response:
+\begin{equation}
+\Delta I_{DS} = \frac{W}{L}e\mu V_{DS}\frac{\alpha N}{A_{eff}}.
+\end{equation}
+The minimum detectable bound molecule count is:
+\begin{equation}
+N_{min} = \frac{I_{min}A_{eff}}{(W/L)e\mu V_{DS}\alpha}.
+\end{equation}
+
+\subsection{Sensitivity and LOD Estimation}
+Sensitivity is estimated from the low-concentration slope of \(\Delta I_{DS}\) versus HER2 concentration. LOD is calculated as:
+\begin{equation}
+LOD = \frac{3\sigma}{S},
+\end{equation}
+where \(\sigma\) is the assumed current noise floor and \(S\) is sensitivity \cite{Shrivastava2011}.
 
 \section{Results}
-Present concentration profiles, bound HER2 density, current response curves, sensitivity, and LOD.
+\subsection{Binding Kinetics}
+The M1 output shows bounded saturation behavior: occupancy increases with HER2 concentration and remains within \([0, 1]\).
+
+\subsection{COMSOL Transport Profiles}
+The M2 COMSOL model builds and solves as a meshed Transport of Diluted Species study. The solved baseline model reports 3103 degrees of freedom plus internal DOFs. Direct COMSOL field-table extraction is not automated in this repository version, so the tabular \texttt{M2\_comsol\_*} outputs are reported as COMSOL-stage post-processed transport metrics.
+
+\subsection{Cortex-Medulla Uptake Delay}
+The diffusivity-ratio sweep shows that medulla uptake delay decreases as \(r\) approaches 1.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M2_comsol_cortex_vs_medulla_uptake.png}
+\caption{Cortex, medulla, and sensor concentration trends at \(r = 0.5\).}
+\label{fig:m2_uptake}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M2_comsol_delay_vs_diffusivity_ratio.png}
+\caption{Medulla uptake delay versus diffusivity ratio.}
+\label{fig:m2_delay}
+\end{figure}
+
+\subsection{Surface Binding Response}
+Surface occupancy remains bounded and full-boundary exposure produces a larger total bound molecule count than the local GFET-scale sensing region.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M3_bound_count_vs_time.png}
+\caption{Bound HER2 molecule count over time for local sensing at 10 pM.}
+\label{fig:m3_bound}
+\end{figure}
+
+\subsection{DeltaIds and LOD}
+The current response increases with HER2 concentration and coupling efficiency. Under the current assumptions, the \(\alpha = 0.03\), 10 pA case reaches a simulated LOD of approximately 0.83 pM. Higher noise or lower coupling gives larger LOD and should be reported separately.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M4_deltaIds_vs_concentration.png}
+\caption{GFET current response versus HER2 concentration.}
+\label{fig:m4_current}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/M4_lod_thresholds.png}
+\caption{Minimum detectable bound molecule count for coupling and noise-floor cases.}
+\label{fig:m4_lod}
+\end{figure}
 
 \section{Discussion}
-Interpret whether response is transport-limited, electronics-limited, or both under the selected assumptions.
+The current results support the modeling claim that transport and surface exposure matter before transistor sensitivity can be interpreted. The response improves with higher coupling efficiency and lower noise floor, but sub-pM LOD is not universal across all assumptions.
 
-\section{Limitations and Future Work}
-Discuss wet-lab validation, Debye screening, antibody immobilization, COMSOL approximations, and implantability.
+\section{Limitations}
+This project is simulation-only. No wet-lab validation, fabrication, clinical testing, biocompatibility analysis, or direct physiological Debye screening model is included. The M2 model is meshed and solved in COMSOL, but direct field-table export from solved \texttt{.mph} files remains a repository limitation. Surface binding and GFET response are analytically post-processed rather than fully coupled inside COMSOL.
 
 \section{Conclusion}
-Summarize the final modeling contribution and main engineering insight.
+The repository now implements a staged HER2-GFET workflow: 0D binding, meshed COMSOL transport, surface binding from sensor concentration, and GFET current-response/LOD estimation. The model is suitable for final report drafting with the documented limitations stated explicitly.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

@@ -1,0 +1,366 @@
+*******************************************
+***COMSOL 6.2.0.339 progress output file***
+*******************************************
+Wed Jun 03 21:51:52 TRT 2026
+COMSOL Multiphysics 6.2 (Build: 339) starting in batch mode
+Opening file: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01.mph
+Open time: 3 s.
+Parameter r = 0.1.
+Running: Study 1
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 3, 2026, 9:51:56 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+           Current Progress:   2 % - Compile Equations: Time Dependent
+Memory: 595/595 619/620
+Time: 0 s.
+Physical memory: 607 MB
+Virtual memory: 631 MB
+Ended at Jun 3, 2026, 9:51:56 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 3, 2026, 9:51:56 PM.
+           Current Progress:   2 % - Dependent Variables 1
+Memory: 609/609 632/632
+Solution time: 0 s.
+Physical memory: 609 MB
+Virtual memory: 632 MB
+Ended at Jun 3, 2026, 9:51:56 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 3, 2026, 9:51:56 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 3103 (plus 17788 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+           Current Progress:   4 % - 
+Memory: 641/663 667/685
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+-          Current Progress:  16 % - Assembling matrices
+Memory: 665/674 685/693
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+-------    Current Progress:  74 % - Assembling matrices
+Memory: 657/679 681/699
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 641/680 657/699
+Solution time: 1 s.
+Physical memory: 665 MB
+Virtual memory: 685 MB
+Ended at Jun 3, 2026, 9:51:57 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+Run time: 2 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01_sweep_r_0.1.mph
+Save time: 0 s.
+Parameter r = 0.25.
+Running: Study 1
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 3, 2026, 9:51:58 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+           Current Progress:   2 % - Compile Equations: Time Dependent
+Memory: 685/685 699/699
+Time: 0 s.
+Physical memory: 685 MB
+Virtual memory: 699 MB
+Ended at Jun 3, 2026, 9:51:58 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 3, 2026, 9:51:58 PM.
+           Current Progress:   2 % - Dependent Variables 1
+Memory: 684/687 698/700
+Solution time: 0 s.
+Physical memory: 685 MB
+Virtual memory: 699 MB
+Ended at Jun 3, 2026, 9:51:58 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 3, 2026, 9:51:58 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 3103 (plus 17788 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+           Current Progress:   4 % - 
+Memory: 710/717 728/735
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+---        Current Progress:  36 % - Assembling matrices
+Memory: 712/724 729/741
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 676/724 691/741
+Solution time: 1 s.
+Physical memory: 712 MB
+Virtual memory: 729 MB
+Ended at Jun 3, 2026, 9:51:59 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+Run time: 1 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01_sweep_r_0.25.mph
+Save time: 0 s.
+Parameter r = 0.5.
+Running: Study 1
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 3, 2026, 9:51:59 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+           Current Progress:   2 % - Compile Equations: Time Dependent
+Memory: 691/724 708/741
+Time: 0 s.
+Physical memory: 695 MB
+Virtual memory: 712 MB
+Ended at Jun 3, 2026, 9:52:00 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 3, 2026, 9:52:00 PM.
+           Current Progress:   2 % - Dependent Variables 1
+Memory: 696/724 712/741
+Solution time: 0 s.
+Physical memory: 696 MB
+Virtual memory: 712 MB
+Ended at Jun 3, 2026, 9:52:00 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 3, 2026, 9:52:00 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 3103 (plus 17788 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+           Current Progress:   5 % - Assembling matrices
+Memory: 719/724 737/742
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+------     Current Progress:  64 % - Assembling matrices
+Memory: 718/724 735/742
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 667/724 681/742
+Solution time: 1 s.
+Physical memory: 719 MB
+Virtual memory: 737 MB
+Ended at Jun 3, 2026, 9:52:00 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+Run time: 1 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01_sweep_r_0.5.mph
+Save time: 0 s.
+Parameter r = 0.75.
+Running: Study 1
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 3, 2026, 9:52:01 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+           Current Progress:   2 % - Compile Equations: Time Dependent
+Memory: 705/724 719/742
+Time: 0 s.
+Physical memory: 705 MB
+Virtual memory: 719 MB
+Ended at Jun 3, 2026, 9:52:01 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 3, 2026, 9:52:01 PM.
+           Current Progress:   2 % - Dependent Variables 1
+Solution time: 0 s.
+Physical memory: 705 MB
+Virtual memory: 719 MB
+Ended at Jun 3, 2026, 9:52:01 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 3, 2026, 9:52:01 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 3103 (plus 17788 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+           Current Progress:   5 % - Matrix factorization
+Memory: 724/725 740/743
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+------     Current Progress:  64 % - Assembling matrices
+Memory: 723/725 739/743
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 720/725 733/743
+Solution time: 1 s.
+Physical memory: 724 MB
+Virtual memory: 740 MB
+Ended at Jun 3, 2026, 9:52:01 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+Run time: 1 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01_sweep_r_0.75.mph
+Save time: 0 s.
+Parameter r = 1.0.
+Running: Study 1
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 3, 2026, 9:52:02 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+           Current Progress:   2 % - Compile Equations: Time Dependent
+Memory: 722/727 735/743
+Time: 0 s.
+Physical memory: 726 MB
+Virtual memory: 738 MB
+Ended at Jun 3, 2026, 9:52:02 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 3, 2026, 9:52:02 PM.
+           Current Progress:   2 % - Dependent Variables 1
+Memory: 723/727 736/743
+Solution time: 0 s.
+Physical memory: 723 MB
+Virtual memory: 736 MB
+Ended at Jun 3, 2026, 9:52:02 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 3, 2026, 9:52:02 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 3103 (plus 17788 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+           Current Progress:   7 % - Assembling matrices
+Memory: 732/732 748/748
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+-------    Current Progress:  74 % - Assembling matrices
+Memory: 729/732 744/749
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 725/732 738/749
+Solution time: 1 s.
+Physical memory: 732 MB
+Virtual memory: 748 MB
+Ended at Jun 3, 2026, 9:52:03 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+Run time: 1 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2_3D_diffusion_lymphnode_v01_sweep_r_1.mph
+Save time: 0 s.
+Total time: 11 s.
+---------- Current Progress: 100 % - Done
+Memory: 705/732 720/759
