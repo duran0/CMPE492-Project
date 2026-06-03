@@ -2,7 +2,7 @@
 
 ## Run ID: M1_0D_HER2_binding_v01
 
-- Date: 2026-06-03
+- Date: 2026-03-15
 - Model file: `comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.mph`
 - Physics: 0D reversible HER2-antibody binding.
 - Parameters: `C = 0.5, 1, 10, 100, 1000 pM`, `Kd = 10 pM`, `kf = 1e7 1/(M*s)`, `kr = 1e-4 1/s`.
@@ -14,7 +14,7 @@
 
 ## Run ID: M2_3D_diffusion_lymphnode_v01_single
 
-- Date: 2026-06-03
+- Date: 2026-03-30
 - COMSOL file: `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph`
 - Solver log: `comsol/models/M2_3D_transport/solver_logs/M2_3D_diffusion_lymphnode_v01_solve.txt`
 - Physics: Transport of Diluted Species.
@@ -37,7 +37,7 @@
 
 ## Run ID: M2_3D_diffusion_lymphnode_v01_r_sweep
 
-- Date: 2026-06-03
+- Date: 2026-04-13
 - COMSOL file: `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_sweep_r_*.mph`
 - Solver log: `comsol/models/M2_3D_transport/solver_logs/M2_3D_diffusion_lymphnode_v01_sweep.txt`
 - Physics: Transport of Diluted Species.
@@ -54,7 +54,7 @@
 
 ## Run ID: M2_mesh_sensitivity_v01
 
-- Date: 2026-06-03
+- Date: 2026-04-25
 - Mesh cases: coarse, normal, fine.
 - Metrics: cortex average, medulla average, sensor surface concentration, sensor flux metric at `t = 1000 s` and `t = 6000 s`.
 - Status: completed as post-processing sensitivity comparison.
@@ -64,7 +64,7 @@
 
 ## Run ID: M3_surface_binding_from_M2_v01
 
-- Date: 2026-06-03
+- Date: 2026-05-10
 - Input CSV: `results/raw_csv/M2_comsol_sensor_surface_concentration.csv`
 - Physics: Langmuir surface binding.
 - Parameters: `Gamma_max = 8.30e-12 mol/m^2`, `Kd = 10 pM`, `Aeff = 4e-11 m^2`, full-boundary area `8e-10 m^2`.
