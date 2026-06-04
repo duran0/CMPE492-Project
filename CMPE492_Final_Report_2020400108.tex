@@ -1,0 +1,446 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+
+\graphicspath{
+  {figures/midterm_extracted/}
+  {results/figures_for_report/}
+}
+
+\pdfcatalog{
+  /ViewerPreferences <<
+    /Duplex /Simplex
+    /PrintScaling /None
+  >>
+}
+
+\newcommand{\reportfigure}[4][0.78\textwidth]{%
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+    \label{#4}
+\end{figure}
+}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.8cm}
+{\Huge\textbf{In-body Antigen Detection via Antibodies on a Transistor}}\\[0.8cm]
+{\Large CMPE 492 Final Report Draft}\\[1.5cm]
+\textbf{Student:} Duran Kaan Altin\\
+\textbf{Student ID:} 2020400108\\
+\textbf{Advisors:} Tuna Tugcu and Kutlu Ulgen\\
+\textbf{Date:} June 2026\\[1.5cm]
+\vfill
+\textit{This final draft integrates the midterm background, planning, modeling rationale, and earlier diffusion/binding results with the final COMSOL-stage transport, prescribed-flow, GFET response, LOD, and Debye-screening results.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\chapter{Introduction}
+
+\section{Broad Impact and Motivation}
+
+Cancer develops when normal regulatory mechanisms for cell division fail, allowing malignant cells to invade nearby tissues and spread through blood or lymphatic circulation. One clinically important biomarker in breast cancer is the Human Epidermal Growth Factor Receptor 2, or HER2. HER2 normally participates in signaling pathways that regulate proliferation and tissue repair. When HER2 is overexpressed, however, this signaling pathway can drive aggressive tumor growth and change treatment decisions~\cite{Slamon1987,Wolff2018,yarden2001,kabel2017}.
+
+The midterm report framed this project as a bridge between cancer biomarker detection and nanoscale electronics. That framing is preserved here. Conventional HER2 workflows such as immunohistochemistry, fluorescence in situ hybridization, ELISA, and related immunoassays are sensitive and clinically meaningful, but they are not designed for continuous in-body monitoring. They also require labeling steps, sample handling, trained personnel, and external laboratory infrastructure~\cite{janeway2001,harpaz2017}.
+
+This project studies a simulation-based alternative: an antibody-functionalized graphene field-effect transistor (GFET) that detects HER2 through the electrical effect of antigen-antibody binding. The scientific question is not whether a deployable clinical implant has been built. It has not. The question is whether HER2 transport, surface binding, and GFET transduction can be modeled together well enough to identify the dominant feasibility barriers.
+
+\reportfigure{midterm_01_healthy_breast_cells.png}{Healthy breast cells, carried forward from the midterm report to show the biological starting point of the HER2 discussion~\cite{biodigital}.}{fig:healthy_cells}
+
+\reportfigure{midterm_02_malignant_cell.png}{Malignant cell illustration from the midterm report, used to connect abnormal signaling to cancer progression~\cite{biodigital}.}{fig:malignant_cell}
+
+\reportfigure{midterm_03_uncontrolled_reproduction.png}{Uncontrolled reproduction of cancerous cells, carried forward from the midterm report~\cite{biodigital}.}{fig:uncontrolled_reproduction}
+
+\section{Problem Definition}
+
+The problem studied in this project is the detectability of HER2 in a simplified in-body-inspired environment. A sensor placed in or near tissue does not see the bulk antigen concentration directly. HER2 must first move through the local medium, reach the sensing surface, bind to immobilized antibodies, and create a charge perturbation strong enough to be measured by the transistor.
+
+The midterm report described the breast cancer context, HER2 relevance, and lymph-node motivation. The final work keeps that context but makes the claim narrower and more defensible. The final claim is that transport and placement can improve HER2 exposure at the sensor, while electrostatic screening and electronics noise are likely the main GFET detectability barriers.
+
+\reportfigure{midterm_04_breast_anatomy.png}{Breast anatomy figure from the midterm report, used as biological context for breast cancer progression~\cite{biodigital}.}{fig:breast_anatomy}
+
+\reportfigure{midterm_05_stage0_breast_cancer.png}{Stage 0 breast cancer illustration from the midterm report~\cite{biodigital}.}{fig:stage0}
+
+\reportfigure{midterm_06_stage1_breast_cancer.png}{Stage I breast cancer illustration from the midterm report~\cite{biodigital}.}{fig:stage1}
+
+\reportfigure{midterm_07_stage2_breast_cancer.png}{Stage II breast cancer illustration from the midterm report~\cite{biodigital}.}{fig:stage2}
+
+\reportfigure{midterm_08_stage3_breast_cancer.png}{Stage III breast cancer illustration from the midterm report~\cite{biodigital}.}{fig:stage3}
+
+\reportfigure{midterm_09_stage4_breast_cancer.png}{Stage IV breast cancer illustration from the midterm report~\cite{biodigital}.}{fig:stage4}
+
+\section{Ethical Considerations}
+
+The project is simulation-only. It does not involve human subjects, patient data, animal experiments, wet-lab testing, implantation, or clinical validation. Still, the ethical concerns from the midterm report remain relevant for future development. Any future device that moves toward in-body sensing would need biocompatibility evaluation, medical device risk management, and safety testing such as the ISO 10993 biological evaluation framework~\cite{iso10993}.
+
+The other ethical issue is scientific honesty. A simulation can guide engineering decisions, but it cannot prove clinical performance. For that reason, this report avoids claims such as ``clinical feasibility is proven'' or ``an in-body detector was built.'' The correct conclusion is that the model predicts detectability only under specific physical and electronic assumptions.
+
+\chapter{Project Definition and Planning}
+
+\section{Solution Definition}
+
+The proposed sensing chain is:
+\[
+\text{HER2 transport}
+\rightarrow
+\text{surface binding}
+\rightarrow
+\text{bound molecule count}
+\rightarrow
+\text{surface charge perturbation}
+\rightarrow
+\Delta I_{DS}.
+\]
+
+The GFET is used as the electrical transducer. HER2 antibodies are assumed to be immobilized on or near the graphene sensing surface. When HER2 binds to the antibody-functionalized surface, the local charge environment changes. That charge perturbation modifies the effective channel carrier density and produces a drain-source current shift.
+
+\section{Functional and Non-functional Requirements}
+
+The project requirements from the midterm report were kept and made more concrete in the final repository:
+
+\begin{itemize}
+    \item model HER2-antibody binding and occupancy over biologically relevant concentrations;
+    \item model HER2 transport in a simplified lymph-node-inspired region;
+    \item compare diffusion-only transport with a prescribed-velocity flow extension;
+    \item convert local sensor concentration into surface occupancy and bound molecule count;
+    \item map bound molecule count into GFET current response;
+    \item estimate sensitivity, limit of detection, and detectability under noise and coupling assumptions;
+    \item explicitly document limitations, especially Debye screening and missing wet-lab validation.
+\end{itemize}
+
+Non-functional requirements were also important. The model outputs had to be reproducible from repository files, parameters had to be documented, and plots had to be report-ready. The repository therefore contains COMSOL Java files, solver logs, processed CSV files, scripts, plots, verification notes, poster content, and video script material.
+
+\section{Risk Analysis}
+
+The midterm report identified risks around model complexity, COMSOL implementation, parameter uncertainty, and overclaiming. The final work confirms that these were the right risks. The most important technical risks are:
+
+\begin{itemize}
+    \item \textbf{Transport simplification:} lymph-node flow is represented by a prescribed velocity field, not a validated anatomical Darcy-flow solution.
+    \item \textbf{Surface chemistry simplification:} antibody immobilization and receptor distance are treated through effective parameters.
+    \item \textbf{Electrical simplification:} GFET current response is analytical rather than a full graphene device simulation.
+    \item \textbf{Screening risk:} physiological ionic strength can attenuate charge signals strongly.
+    \item \textbf{Validation risk:} there is no wet-lab or clinical validation.
+\end{itemize}
+
+\chapter{Background}
+
+\section{HER2 and Antibody-Based Detection}
+
+HER2 is an established biomarker in breast cancer evaluation. Antibody-based methods are natural for HER2 detection because antibodies can bind selectively to the target antigen. The binding process is represented as:
+\begin{equation}
+Ag + Ab \rightleftharpoons AgAb,
+\end{equation}
+with reaction rate:
+\begin{equation}
+r = k_f[Ag][Ab] - k_r[AgAb],
+\end{equation}
+and dissociation constant:
+\begin{equation}
+K_d = \frac{k_r}{k_f}.
+\end{equation}
+
+For the surface-bound sensor model, the Langmuir occupancy form is used:
+\begin{equation}
+\theta = \frac{c_{surface}}{K_d + c_{surface}}.
+\end{equation}
+This equation is simple, but it is useful because it directly maps local sensor concentration into expected surface occupancy.
+
+\section{Field-Effect and GFET Biosensing}
+
+The midterm report included a field-effect transistor operation section, and that content remains central. A field-effect transistor controls channel current by changing the electric field near the channel. In a GFET biosensor, the graphene channel is exposed to the local electrostatic environment. Binding of charged or polar biomolecules can shift the effective gate potential and change the drain-source current~\cite{bergveld1972,Bergveld1970,Ohno2010,Kuila2011}.
+
+\reportfigure[0.65\textwidth]{midterm_10_fet_operation.png}{Field-effect transistor operation diagram carried forward from the midterm report.}{fig:fet_operation}
+
+The GFET response model used in the final stage is:
+\begin{equation}
+\Delta I_{DS}
+=
+\frac{W}{L}e\mu V_{DS}\frac{\alpha N}{A_{eff}},
+\end{equation}
+where \(W/L\) is the channel aspect ratio, \(e\) is elementary charge, \(\mu\) is mobility, \(V_{DS}\) is drain-source voltage, \(N\) is bound molecule count, \(A_{eff}\) is effective sensing area, and \(\alpha\) is an effective coupling factor.
+
+\section{Debye Screening}
+
+The midterm report treated electrostatic coupling through effective parameters. The final work makes that limitation explicit by adding Debye screening analysis. In electrolyte, charges farther away from the graphene channel are screened. The simplified attenuation model is:
+\begin{equation}
+\alpha_{eff}=\alpha_0\exp(-d/\lambda_D),
+\end{equation}
+where \(d\) is effective receptor-to-channel charge distance and \(\lambda_D\) is Debye length. This is not a full electrochemical model, but it is enough to test whether long receptor distances and physiological salt make the GFET signal unrealistic.
+
+\chapter{System Design and Implementation}
+
+\section{Information Structure}
+
+The implementation follows a staged pipeline:
+
+\begin{enumerate}
+    \item \textbf{M1 binding kinetics:} HER2-antibody occupancy versus concentration.
+    \item \textbf{M2 diffusion-only transport:} COMSOL Transport of Diluted Species in a simplified cortex/medulla-inspired geometry.
+    \item \textbf{M2B prescribed-flow extension:} partially anatomical prescribed-velocity convection-diffusion model.
+    \item \textbf{M3 surface binding:} local sensor concentration to occupancy and bound molecule count.
+    \item \textbf{M4 GFET response:} bound molecule count to \(\Delta I_{DS}\), sensitivity, and LOD.
+    \item \textbf{EXP A--D campaign:} flow comparison, sensor placement, detectability envelope, and Debye screening feasibility.
+\end{enumerate}
+
+This structure is close to how a senior CS project should be organized: separate modules, explicit assumptions, reproducible outputs, and a verification report instead of a single monolithic simulation file.
+
+\section{Transport Model Definition}
+
+The M2 transport model uses diffusion in a simplified lymph-node-inspired geometry:
+\begin{equation}
+\frac{\partial c}{\partial t} = \nabla \cdot (D \nabla c).
+\end{equation}
+The medulla diffusion coefficient is parameterized as:
+\begin{equation}
+D_{\text{medulla}} = rD_{\text{cortex}}.
+\end{equation}
+The midterm sweep studied how smaller internal diffusivity creates delayed uptake in deeper regions.
+
+\reportfigure{midterm_11_diffusion_model_geometry.png}{Midterm diffusion-only geometry used to motivate the cortex/medulla transport model.}{fig:midterm_geometry}
+
+\reportfigure{midterm_12_concentration_surface.png}{Midterm concentration surface visualization.}{fig:midterm_concentration_surface}
+
+\reportfigure{midterm_13_concentration_slice.png}{Midterm concentration slice visualization.}{fig:midterm_concentration_slice}
+
+\reportfigure{midterm_14_flux_early.png}{Midterm early-time diffusive flux field.}{fig:midterm_flux_early}
+
+\reportfigure{midterm_15_flux_6000s.png}{Midterm long-time diffusive flux field at 6000 s.}{fig:midterm_flux_6000s}
+
+\section{Surface Binding and Signal Transduction}
+
+The midterm report connected local concentration to surface binding density \(\Gamma(t)\), surface charge density, gate-voltage shift, and drain-source current shift. The same chain is retained:
+\begin{equation}
+\Gamma = \Gamma_{max}\theta,
+\qquad
+N_{bound} = \Gamma A_{sensor}N_A.
+\end{equation}
+
+The surface charge and gate-voltage relations are:
+\begin{equation}
+\sigma_{\text{eff}}(t) = q\Gamma(t),
+\end{equation}
+\begin{equation}
+\Delta V_g(t) = \frac{\sigma_{\text{eff}}(t)}{C_{\text{eq}}}.
+\end{equation}
+
+\reportfigure{midterm_18_full_surface_geometry.png}{Midterm full-boundary sensing geometry.}{fig:midterm_full_surface}
+
+\reportfigure{midterm_19_full_surface_concentration.png}{Midterm full-boundary sensor concentration response.}{fig:midterm_full_surface_c}
+
+\reportfigure{midterm_20_full_surface_gamma.png}{Midterm full-boundary surface binding density response.}{fig:midterm_full_surface_gamma}
+
+\reportfigure{midterm_21_local_sensor_geometry.png}{Midterm localized GFET-scale sensing region.}{fig:midterm_local_sensor}
+
+\reportfigure{midterm_22_local_sensor_gamma.png}{Midterm local-sensor surface binding density response.}{fig:midterm_local_gamma}
+
+\reportfigure{midterm_23_surface_charge.png}{Midterm surface charge response derived from surface binding.}{fig:midterm_surface_charge}
+
+\reportfigure{midterm_24_gate_voltage_shift.png}{Midterm effective gate-voltage shift derived from surface charge.}{fig:midterm_gate_shift}
+
+\reportfigure{midterm_25_ids_shift.png}{Midterm drain-source current shift prediction.}{fig:midterm_ids_shift}
+
+\chapter{Final Methodology}
+
+\section{M1: Binding Kinetics}
+
+The final M1 stage evaluates HER2 concentrations of 0.5, 1, 10, 100, and 1000 pM using a baseline \(K_d=10\) pM. The goal is not to fit new biochemical data; it is to verify that the binding block behaves correctly and produces bounded occupancy before it is connected to transport and electrical response.
+
+\reportfigure{M1_occupancy_vs_concentration.png}{M1 equilibrium occupancy versus HER2 concentration.}{fig:m1_final_occupancy}
+
+\section{M2: COMSOL Diffusion-Only Transport}
+
+The final M2 stage is a meshed COMSOL Transport of Diluted Species model. It preserves the diffusion-only baseline from the midterm while improving documentation and exporting report-ready CSV/PNG outputs.
+
+\reportfigure{M2_comsol_concentration_slice_t1000s.png}{M2 COMSOL-stage concentration slice at 1000 s.}{fig:m2_final_slice}
+
+\reportfigure{M2_comsol_flux_streamlines_t1000s.png}{M2 COMSOL-stage flux streamlines at 1000 s.}{fig:m2_final_flux}
+
+\reportfigure{M2_comsol_cortex_vs_medulla_uptake.png}{M2 cortex, medulla, and sensor uptake trends.}{fig:m2_final_uptake}
+
+\reportfigure{M2_comsol_delay_vs_diffusivity_ratio.png}{M2 medulla uptake delay versus diffusivity ratio.}{fig:m2_final_delay}
+
+\reportfigure{midterm_16_cortex_medulla_uptake.png}{Midterm cortex-medulla uptake plot retained for continuity with the earlier report.}{fig:midterm_uptake_plot}
+
+\reportfigure{midterm_17_parametric_sweep.png}{Midterm parametric sweep plot retained for continuity with the earlier report.}{fig:midterm_parametric_sweep}
+
+\section{M2B: Partially Anatomical Prescribed-Flow Extension}
+
+M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution. It defines four afferent inlet regions, one hilum-side efferent outlet, local and full sensor regions, and a prescribed velocity field coupled into the Transport of Diluted Species convection term:
+\[
+u=u_{flow}, \qquad v=v_{flow}, \qquad w=w_{flow}.
+\]
+
+The tested inlet velocities are:
+\[
+v_{in} \in \{0, 10^{-7}, 5\times 10^{-7}, 10^{-6}\} \text{ m/s}.
+\]
+The \(v_{in}=0\) case is used as the diffusion-like control.
+
+\reportfigure{M2B_flow_velocity_streamlines.png}{M2B prescribed-velocity streamline profile.}{fig:m2b_velocity}
+
+\reportfigure{M2B_flow_concentration_slice_t1000s.png}{M2B concentration slice at 1000 s.}{fig:m2b_conc1000}
+
+\reportfigure{M2B_flow_vs_diffusion_sensor_exposure.png}{M2B reference flow case compared with the M2 diffusion-only sensor exposure.}{fig:m2b_vs_m2}
+
+\section{M3 and M4: Surface Binding, Current Response, and LOD}
+
+M3 converts sensor concentration into bound molecule count. M4 converts bound molecule count into \(\Delta I_{DS}\), sensitivity, and LOD. The detection threshold follows:
+\begin{equation}
+LOD = \frac{3\sigma}{S},
+\end{equation}
+where \(\sigma\) is the assumed current noise floor and \(S\) is the sensitivity from the low-concentration slope.
+
+\reportfigure{M3_bound_count_vs_time.png}{M3 bound HER2 molecule count over time for local sensing.}{fig:m3_bound}
+
+\reportfigure{M4_deltaIds_vs_concentration.png}{M4 GFET current response versus HER2 concentration.}{fig:m4_deltaids}
+
+\reportfigure{M4_lod_thresholds.png}{M4 minimum detectable bound molecule count for coupling and noise cases.}{fig:m4_lod}
+
+\chapter{Final Results}
+
+\section{Result Summary}
+
+\begin{longtable}{p{0.24\textwidth}p{0.28\textwidth}p{0.38\textwidth}}
+\caption{Final experiment summary.}\\
+\toprule
+\textbf{Experiment} & \textbf{Main metric} & \textbf{Conclusion}\\
+\midrule
+Flow versus diffusion & Sensor concentration at 6000 s and time-to-50\% exposure & Reference flow \(v_{in}=5\times10^{-7}\) m/s gives 8.73 pM at 6000 s versus 4.98 pM for diffusion-only transport, a 1.75x increase. Time-to-50\% exposure decreases from 6038 s to 1839 s.\\
+Sensor placement & \(\Delta I_{DS}\) at 6000 s and arrival timing & Sensor placement affects response timing and current response. Subcapsular/cortical placement is fastest and strongest under the reference flow case. Under directional flow, late-time exposure becomes high across all tested placements.\\
+Detectability envelope & Detectable versus failing parameter rows & 99 parameter rows are detectable and 36 fail across coupling, noise, \(K_d\), and concentration sweeps.\\
+Debye screening & Screened LOD and detectable rows & PBS-like cases with \(d\geq5\) nm have 0/60 detectable rows after electrostatic attenuation.\\
+\bottomrule
+\end{longtable}
+
+\section{Experiment A: Flow Versus Diffusion}
+
+Directional flow changes HER2 exposure at the sensor compared with diffusion-only transport. The reference \(5\times10^{-7}\) m/s flow case reaches 8.73 pM sensor concentration at 6000 s, while diffusion-only transport reaches 4.98 pM under the same concentration and time horizon.
+
+\reportfigure{EXP_A_flow_vs_diffusion_sensor_exposure.png}{Experiment A: sensor exposure under diffusion-only and directional-flow cases.}{fig:exp_a}
+
+\section{Experiment B: Sensor Placement}
+
+Sensor placement affects response timing and current response. In the modeled sweep, the subcapsular/cortical placement is fastest and strongest under the reference flow case. Under directional flow, late-time exposure becomes high across all tested placements, while placement still changes arrival time and pathway exposure. This wording is important because the late-time current spread is smaller under flow than under diffusion-only transport.
+
+\reportfigure{EXP_B_sensor_placement_exposure.png}{Experiment B: concentration exposure for sensor placements under diffusion-only and directional-flow transport.}{fig:exp_b_exposure}
+
+\reportfigure{EXP_B_sensor_placement_deltaIds.png}{Experiment B: GFET current response at 6000 s for the sensor-placement sweep.}{fig:exp_b_current}
+
+\section{Experiment C: Electrical Detectability Envelope}
+
+Experiment C evaluates how concentration, coupling efficiency, current noise, and binding affinity affect whether the GFET signal clears a \(3\sigma\) detection threshold. The important outcome is mixed: detection is possible in favorable parameter combinations, but it fails when coupling is weak, electronics noise is high, concentration is low, or binding affinity is poor.
+
+\reportfigure{EXP_C_deltaIds_vs_concentration.png}{Experiment C: current response versus HER2 concentration for coupling-efficiency cases.}{fig:exp_c_current}
+
+\reportfigure{EXP_C_detectable_region_map.png}{Experiment C: detectable fraction across concentration and affinity cases.}{fig:exp_c_detectable}
+
+\section{Experiment D: Debye Screening Feasibility}
+
+Experiment D is the main negative feasibility check. Even if HER2 reaches the sensor and binds, physiological ionic strength can screen the charge before it strongly affects graphene. For PBS-like screening with \(\lambda_D=0.8\) nm and effective charge distance \(d\geq5\) nm, none of the 60 screened cases remain detectable.
+
+\reportfigure{EXP_D_lod_vs_ionic_strength.png}{Experiment D: screened LOD versus ionic-strength case.}{fig:exp_d_lod}
+
+\reportfigure{EXP_D_detectability_map_screened.png}{Experiment D: screened detectability map under Debye attenuation assumptions.}{fig:exp_d_detectability}
+
+\section{Final Scientific Claims}
+
+\begin{longtable}{p{0.26\textwidth}p{0.37\textwidth}p{0.27\textwidth}}
+\caption{Final scientific claims and confidence level.}\\
+\toprule
+\textbf{Claim} & \textbf{Supporting result} & \textbf{Confidence and limitation}\\
+\midrule
+HER2-antibody binding follows bounded saturation behavior. & M1 occupancy increases monotonically and remains within \([0,1]\). & High for equation-level behavior; no wet-lab binding calibration.\\
+Directional flow changes sensor exposure. & At 10 pM, reference flow gives 8.73 pM at 6000 s versus 4.98 pM for diffusion-only transport. & Medium for model trend; prescribed velocity is not a validated Darcy-flow solution.\\
+Sensor placement changes timing and current response. & Subcapsular/cortical placement is fastest and strongest under reference flow, but late-time flow exposure is high across tested placements. & Medium for relative sensitivity; not a full remeshed COMSOL relocation study.\\
+Sub-pM or low-pM detectability is conditional. & 99 detectable and 36 failing rows appear in the coupling/noise/\(K_d\)/concentration sweep. & Medium for parametric envelope; low for direct device claim.\\
+PBS-like screening is a major barrier. & For \(\lambda_D=0.8\) nm and \(d\geq5\) nm, 0/60 screened cases remain detectable. & Medium for screening direction; exact threshold depends on real device chemistry.\\
+\bottomrule
+\end{longtable}
+
+\chapter{Discussion}
+
+\section{What Was Calculated}
+
+This project calculated HER2 binding occupancy, diffusion-only transport, prescribed-velocity convection-diffusion transport, sensor placement exposure, local bound molecule count, GFET current response, LOD, detectability envelopes, and Debye-screened current response.
+
+\section{What Was Concluded}
+
+The positive result is that transport and placement are not irrelevant. Directional flow increases sensor exposure and reduces exposure time relative to the diffusion-only baseline under the modeled assumptions. Sensor placement also changes arrival time and current response.
+
+The negative result is that electrical detectability is not guaranteed. A GFET can look promising in an ideal current-response model but fail after noise, weak coupling, poor affinity, or Debye screening are included. This is the main engineering lesson of the project.
+
+\section{What Must Improve}
+
+For the biosensor concept to become more feasible, future designs would need shorter effective receptor-to-channel distance, lower-noise electronics, stronger transduction efficiency, higher-affinity recognition chemistry, or local mitigation of physiological ionic screening. These are engineering requirements suggested by the model, not demonstrated device performance.
+
+\chapter{Limitations}
+
+The following limitations are intentionally stated because they define how the final results should be interpreted:
+
+\begin{itemize}
+    \item The project is simulation-only.
+    \item There is no wet-lab validation, fabrication, implantation test, or clinical testing.
+    \item M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
+    \item Direct COMSOL field-table export remains future work; the current quantitative tables are post-processed from the documented COMSOL-stage model and parameter sweeps.
+    \item Surface binding and GFET response are analytically post-processed rather than fully coupled inside COMSOL.
+    \item Debye screening uses effective feasibility assumptions rather than measured implant-interface conditions.
+\end{itemize}
+
+\chapter{Conclusion}
+
+The final conclusion is that HER2 transport alone does not determine GFET biosensor feasibility. Directional flow and sensor placement improve HER2 exposure at the sensing region, but electrostatic screening and electronics noise dominate practical detectability. Under favorable coupling and low-noise assumptions, the model predicts low-pM or sub-pM detectability. Under PBS-like screening with longer receptor distance, the predicted GFET signal is not robust.
+
+The project therefore produces a useful simulation workflow rather than a clinical device claim. It preserves the midterm biological motivation, ethical framing, FET background, diffusion model, surface binding model, and electrical transduction chain, then extends them with final COMSOL-stage transport verification, M2B flow comparison, sensor placement analysis, detectability-envelope testing, and Debye-screening feasibility analysis.
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+Sincere thanks are extended to M. Gorkem Durmaz, whose earlier BAP project on graphene-based biosensor modeling provided conceptual and scientific guidance for this work. Thanks are also extended to the project advisors for feedback on the modeling direction and final deliverables.
+
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibitem{janeway2001} C.~A.~Janeway \textit{et al.}, \textit{Immunobiology: The Immune System in Health and Disease}, 5th~ed. New York, NY: Garland Science, 2001.
+\bibitem{yarden2001} S.~Yarden and M.~X.~Sliwkowski, ``Untangling the ErbB signalling network,'' \textit{Nature Reviews Molecular Cell Biology}, vol.~2, pp.~127--137, 2001.
+\bibitem{kabel2017} A.~M.~Kabel, ``Tumor markers of breast cancer: New prospectives,'' \textit{Journal of Oncology Sciences}, vol.~3, no.~1, pp.~5--11, 2017.
+\bibitem{harpaz2017} D.~Harpaz \textit{et al.}, ``Point-of-care-testing in acute stroke management,'' \textit{Biosensors}, vol.~7, no.~3, p.~30, 2017.
+\bibitem{Slamon1987} D.~J.~Slamon \textit{et al.}, ``Human breast cancer: Correlation of relapse and survival with amplification of the HER-2/neu oncogene,'' \textit{Science}, vol.~235, no.~4785, pp.~177--182, 1987.
+\bibitem{Wolff2018} A.~C.~Wolff \textit{et al.}, ``Human epidermal growth factor receptor 2 testing in breast cancer,'' \textit{Journal of Clinical Oncology}, vol.~36, no.~20, pp.~2105--2122, 2018.
+\bibitem{bergveld1972} P.~Bergveld, ``Development, operation, and application of the ion-sensitive field-effect transistor,'' \textit{IEEE Transactions on Biomedical Engineering}, vol.~BME-19, no.~5, pp.~342--351, 1972.
+\bibitem{Bergveld1970} P.~Bergveld, ``Development of an ion-sensitive solid-state device for neurophysiological measurements,'' \textit{IEEE Transactions on Biomedical Engineering}, vol.~BME-17, no.~1, pp.~70--71, 1970.
+\bibitem{Ohno2010} Y.~Ohno, K.~Maehashi, Y.~Yamashiro, and K.~Matsumoto, ``Electrolyte-gated graphene field-effect transistors for detecting pH and protein adsorption,'' \textit{Nano Letters}, vol.~9, no.~9, pp.~3318--3322, 2009.
+\bibitem{Kuila2011} T.~Kuila \textit{et al.}, ``Recent advances in graphene-based biosensors,'' \textit{Biosensors and Bioelectronics}, vol.~26, no.~12, pp.~4637--4648, 2011.
+\bibitem{pena2018} J.~Pe\~na-Bahamonde \textit{et al.}, ``Recent advances in graphene-based biosensor technology with applications in life sciences,'' \textit{Journal of Nanobiotechnology}, vol.~16, no.~1, p.~75, 2018.
+\bibitem{Squires2008} T.~M.~Squires, R.~J.~Messinger, and S.~R.~Manalis, ``Making it stick: Convection, reaction and diffusion in surface-based biosensors,'' \textit{Nature Biotechnology}, vol.~26, no.~4, pp.~417--426, 2008.
+\bibitem{Shrivastava2011} A.~Shrivastava and V.~B.~Gupta, ``Methods for the determination of limit of detection and limit of quantitation,'' \textit{Chronicles of Young Scientists}, vol.~2, no.~1, pp.~21--25, 2011.
+\bibitem{Stern2007} E.~Stern, A.~Vacic, and M.~A.~Reed, ``Semiconducting nanowire field-effect transistor biomolecular sensors,'' \textit{IEEE Transactions on Electron Devices}, vol.~55, no.~11, pp.~3119--3130, 2008.
+\bibitem{Stern2010Debye} E.~Stern \textit{et al.}, ``Importance of the Debye screening length on nanowire field effect transistor sensors,'' \textit{Nano Letters}, vol.~7, no.~11, pp.~3405--3409, 2007.
+\bibitem{biodigital} BioDigital, Inc., ``BioDigital Human: 3D Human Visualization Platform,'' 2025. [Online]. Available: \url{https://human.biodigital.com/}
+\bibitem{iso10993} International Organization for Standardization, ``ISO 10993-1: Biological evaluation of medical devices -- Part 1: Evaluation and testing within a risk management process,'' ISO, Geneva, Switzerland, 2018.
+
+\end{thebibliography}
+
+\end{document}
