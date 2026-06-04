@@ -105,3 +105,17 @@
 - Exported CSV: `results/processed_csv/M4_deltaIds_vs_time.csv`, `results/processed_csv/M4_deltaIds_vs_concentration.csv`, `results/processed_csv/M4_noise_floor_thresholds.csv`, `results/processed_csv/M4_lod_summary.csv`.
 - Exported figures: `results/plots/M4_deltaIds_vs_time.png`, `results/plots/M4_deltaIds_vs_concentration.png`, `results/plots/M4_lod_thresholds.png`, `results/plots/M4_detection_threshold_overlay.png`.
 - Notes: the `alpha = 0.03`, `10 pA` case reaches simulated LOD below 1 pM; this does not hold for every noise/coupling case.
+
+## Run ID: final_scientific_experiment_campaign
+
+- Date: 2026-06-04
+- Input data: M2 diffusion baseline, verified M2B convection-diffusion outputs, M3 local-sensor binding assumptions, and M4 GFET current-response equation.
+- Experiments:
+  - Experiment A: flow versus diffusion at `C = 10 pM`.
+  - Experiment B: sensor placement sweep under `v_in = 0` and `v_in = 5e-7 m/s`.
+  - Experiment C: detectability envelope over concentration, `alpha_0`, current noise floor, and `Kd`.
+  - Experiment D: Debye screening feasibility using low, moderate, and PBS-like Debye lengths.
+- Status: completed as post-processing experiment campaign with explicit positive and negative conclusions.
+- Exported CSV: `results/processed_csv/EXP_A_flow_vs_diffusion_summary.csv`, `results/processed_csv/EXP_B_sensor_placement_summary.csv`, `results/processed_csv/EXP_C_detectability_envelope.csv`, `results/processed_csv/EXP_D_debye_screening_feasibility.csv`, `results/processed_csv/final_scientific_conclusions.csv`.
+- Exported figures: `results/plots/EXP_A_flow_vs_diffusion_sensor_exposure.png`, `results/plots/EXP_B_sensor_placement_exposure.png`, `results/plots/EXP_B_sensor_placement_deltaIds.png`, `results/plots/EXP_C_deltaIds_vs_concentration.png`, `results/plots/EXP_C_lod_heatmap_alpha_noise.png`, `results/plots/EXP_C_detectable_region_map.png`, `results/plots/EXP_D_alpha_eff_vs_distance.png`, `results/plots/EXP_D_lod_vs_ionic_strength.png`, `results/plots/EXP_D_detectability_map_screened.png`.
+- Notes: flow and placement can improve antigen exposure, but detectability still fails under weak coupling, high noise, poor affinity, or PBS-like Debye screening at longer effective charge distances.

@@ -155,6 +155,67 @@ The diffusivity-ratio sweep shows that medulla uptake delay decreases as \(r\) a
 \subsection{M2B Flow Comparison}
 For the reference case \(r = 0.5\) and \(v_{in}=5\times10^{-7}\) m/s, the M2B convection-diffusion extension gives a sensor time-to-50\% exposure of approximately 1839 s, compared with approximately 6038 s for the M2 diffusion-only baseline under the same sensor-exposure definition. At 6000 s, the reported sensor concentration is 8.73 pM for M2B and 4.98 pM for M2. The zero-flow M2B case gives the same 1000 s and 6000 s sensor concentration values as the diffusion-only baseline, while increasing \(v_{in}\) increases exposure. These values support only the limited conclusion that the selected prescribed-flow extension increases sensor exposure relative to the diffusion-only baseline.
 
+\subsection{Experiment A: Flow versus diffusion}
+Experiment A compares the diffusion-only M2 baseline with M2B directional-flow cases at \(v_{in}=10^{-7}\), \(5\times10^{-7}\), and \(10^{-6}\) m/s for \(C=10\) pM. Directional flow improves sensor exposure: the reference \(5\times10^{-7}\) m/s case reaches 8.73 pM at 6000 s, compared with 4.98 pM for diffusion-only transport. The time to 50\% sensor exposure decreases from approximately 6038 s under diffusion-only transport to approximately 1839 s for the reference flow case.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_A_flow_vs_diffusion_sensor_exposure.png}
+\caption{Experiment A: sensor exposure under diffusion-only transport and directional-flow cases.}
+\label{fig:exp_a_flow}
+\end{figure}
+
+\subsection{Experiment B: Sensor placement sensitivity}
+Experiment B evaluates three sensor placements: subcapsular/cortical, cortex-medulla transition, and medulla/hilum-side. Under the reference flow case, the subcapsular/cortical placement gives the fastest response and the strongest 6000 s current response in this model. The current-response range across placements is approximately 559.9--600.5 pA under flow and 348.2--533.3 pA under diffusion-only transport. Placement therefore matters in both regimes, and flow makes the sensor location along the afferent-to-efferent transport path especially important.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_B_sensor_placement_exposure.png}
+\caption{Experiment B: concentration exposure for sensor placements under diffusion-only and directional-flow transport.}
+\label{fig:exp_b_exposure}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_B_sensor_placement_deltaIds.png}
+\caption{Experiment B: GFET current response at 6000 s for the sensor-placement sweep.}
+\label{fig:exp_b_current}
+\end{figure}
+
+\subsection{Experiment C: Detectability envelope}
+Experiment C sweeps HER2 concentration, coupling efficiency, current noise floor, and binding affinity. Across the simulated envelope, 99 parameter combinations are detectable and 36 fail the \(3\sigma\) current-threshold criterion. Detection is favored by stronger coupling, lower noise, lower \(K_d\), and higher HER2 concentration. Detection fails for low concentration when coupling is weak, noise is high, or binding affinity is poor.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_C_deltaIds_vs_concentration.png}
+\caption{Experiment C: current response versus HER2 concentration for coupling-efficiency cases.}
+\label{fig:exp_c_current}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_C_detectable_region_map.png}
+\caption{Experiment C: detectable fraction across the concentration and affinity sweep.}
+\label{fig:exp_c_detectable}
+\end{figure}
+
+\subsection{Experiment D: Debye screening feasibility}
+Experiment D applies electrostatic attenuation using \(\alpha_{eff}=\alpha_0\exp(-d/\lambda_D)\). Screening strongly reduces feasibility as ionic strength increases and effective charge distance grows. For PBS-like physiological salt with \(d\geq5\) nm, none of the 60 screened cases remain detectable. This is a negative result: direct in-body GFET detection is not robust under PBS-like screening unless effective charge distance is very short, transduction is stronger, noise is lower, or the sensing environment reduces screening.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_D_lod_vs_ionic_strength.png}
+\caption{Experiment D: screened LOD versus ionic-strength case.}
+\label{fig:exp_d_lod}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../results/figures_for_report/EXP_D_detectability_map_screened.png}
+\caption{Experiment D: screened detectability fraction under Debye attenuation assumptions.}
+\label{fig:exp_d_detectable}
+\end{figure}
+
 \subsection{Surface Binding Response}
 Surface occupancy remains bounded and full-boundary exposure produces a larger total bound molecule count than the local GFET-scale sensing region.
 
@@ -183,12 +244,14 @@ The current response increases with HER2 concentration and coupling efficiency. 
 \end{figure}
 
 \section{Discussion}
-The current results support the modeling claim that transport and surface exposure matter before transistor sensitivity can be interpreted. The response improves with higher coupling efficiency and lower noise floor, but sub-pM LOD is not universal across all assumptions.
+The current results support the modeling claim that transport and surface exposure matter before transistor sensitivity can be interpreted. Directional flow improves exposure and sensor placement changes response time, but these positive transport results do not guarantee detectability. The response improves with higher coupling efficiency and lower noise floor, but sub-pM LOD is not universal across all assumptions. Debye screening is the strongest negative feasibility constraint in the final campaign.
 
 \section{Limitations}
 This project is simulation-only. No wet-lab validation, fabrication, clinical testing, biocompatibility analysis, or direct physiological Debye screening model is included. The M2 model is meshed and solved in COMSOL, but direct field-table export from solved \texttt{.mph} files remains a repository limitation. The M2B extension couples prescribed velocity into Transport of Diluted Species, but it is not a validated Darcy-flow pressure solve or full anatomical lymph-node model. Surface binding and GFET response are analytically post-processed rather than fully coupled inside COMSOL.
 
 \section{Conclusion}
+The main scientific conclusion of this project is that HER2 transport alone does not determine GFET biosensor feasibility. Even when antigen reaches the sensor, electrical detectability depends strongly on coupling efficiency, noise floor, and electrostatic screening.
+
 The repository now implements a staged HER2-GFET workflow: 0D binding, meshed COMSOL transport, a separate partially anatomical convection-diffusion extension, surface binding from sensor concentration, and GFET current-response/LOD estimation. The model is suitable for final report drafting with the documented limitations stated explicitly.
 
 \bibliographystyle{IEEEtran}

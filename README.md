@@ -50,6 +50,7 @@ HER2 concentration
 - M3 surface binding: recomputed from `results/raw_csv/M2_comsol_sensor_surface_concentration.csv`.
 - M4 GFET response: recomputed from M3 bound molecule counts, including coupling and noise-floor sweeps.
 - LOD: the `alpha = 0.03`, `10 pA` case reaches simulated LOD below `1 pM`; other cases are reported separately and should not be generalized.
+- Final experiment campaign: `EXP_A` through `EXP_D` quantify flow benefit, sensor placement sensitivity, detectability envelope, and Debye-screening feasibility, with negative conclusions reported where screening/noise/coupling assumptions make detection fail.
 
 ## Reproducibility Notes
 

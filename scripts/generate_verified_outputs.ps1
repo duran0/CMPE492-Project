@@ -262,6 +262,76 @@ function Get-M2BFluxToSensorMolS {
     return $sensorMolM3 * $VelocityMS * $SensorAreaM2
 }
 
+function Get-SensorExposurePm {
+    param(
+        [double] $TimeS,
+        [double] $Ratio,
+        [double] $VelocityMS,
+        [double] $ConcentrationPm,
+        [double] $TauMultiplier,
+        [double] $Gain
+    )
+    $baseTau = Get-M2BFlowTauS $Ratio $VelocityMS
+    $tau = $baseTau * $TauMultiplier
+    return [Math]::Min($ConcentrationPm, $ConcentrationPm * $Gain * (1.0 - [Math]::Exp(-$TimeS / $tau)))
+}
+
+function Get-SensorExposureTimeToThresholdS {
+    param([double] $Ratio, [double] $VelocityMS, [double] $TauMultiplier, [double] $Gain, [double] $ThresholdFraction)
+    if ($ThresholdFraction -ge $Gain) {
+        return [double]::NaN
+    }
+    return -(Get-M2BFlowTauS $Ratio $VelocityMS) * $TauMultiplier * [Math]::Log(1.0 - ($ThresholdFraction / $Gain))
+}
+
+function Get-SensorExposureAucPmS {
+    param([double] $Ratio, [double] $VelocityMS, [double] $ConcentrationPm, [double] $TauMultiplier, [double] $Gain, [double[]] $TimePoints)
+    $auc = 0.0
+    for ($i = 1; $i -lt $TimePoints.Count; $i++) {
+        $t0 = $TimePoints[$i - 1]
+        $t1 = $TimePoints[$i]
+        $c0 = Get-SensorExposurePm $t0 $Ratio $VelocityMS $ConcentrationPm $TauMultiplier $Gain
+        $c1 = Get-SensorExposurePm $t1 $Ratio $VelocityMS $ConcentrationPm $TauMultiplier $Gain
+        $auc += 0.5 * ($c0 + $c1) * ($t1 - $t0)
+    }
+    return $auc
+}
+
+function Get-NBoundFromSurface {
+    param([double] $SurfaceConcentrationPm, [double] $KdValuePm, [double] $AreaM2)
+    if ($SurfaceConcentrationPm -le 0) {
+        return 0.0
+    }
+    $theta = $SurfaceConcentrationPm / ($KdValuePm + $SurfaceConcentrationPm)
+    return $Bmax * $theta * $AreaM2 * $Avogadro
+}
+
+function Get-DeltaIdsFromN {
+    param([double] $NBound, [double] $Alpha)
+    return ($W / $L) * $ElementaryCharge * $mu * $Vds * $Alpha * $NBound / $Aeff
+}
+
+function Get-DetectabilitySensitivity {
+    param([double] $Alpha, [double] $KdValuePm, [double] $VelocityMS)
+    $lowConcentrations = @(0.5, 1.0, 10.0)
+    $points = @()
+    foreach ($c in $lowConcentrations) {
+        $surface = Get-M2BFlowSensorPm 6000 0.5 $VelocityMS $c
+        $n = Get-NBoundFromSurface $surface $KdValuePm $localArea
+        $ids = Get-DeltaIdsFromN $n $Alpha
+        $points += [pscustomobject]@{ C = $c; Ids = $ids }
+    }
+    $xMean = ($points | Measure-Object C -Average).Average
+    $yMean = ($points | Measure-Object Ids -Average).Average
+    $num = 0.0
+    $den = 0.0
+    foreach ($point in $points) {
+        $num += ([double]$point.C - $xMean) * ([double]$point.Ids - $yMean)
+        $den += [Math]::Pow(([double]$point.C - $xMean), 2)
+    }
+    return $num / $den
+}
+
 function Get-NBound {
     param([double] $ConcentrationPm, [double] $TimeS, [double] $Area)
     $theta = Get-ThetaAtTime $ConcentrationPm $TimeS
@@ -844,6 +914,250 @@ $m4LodRows = foreach ($alpha in $alphas) {
 }
 Write-CsvRows (Join-Path $processedDir "M4_lod_summary.csv") $m4LodRows
 
+$expAVelocityCases = @(
+    @{ Label = "M2 diffusion baseline"; Velocity = 0.0; Model = "M2_diffusion_baseline" },
+    @{ Label = "M2B flow v=1e-7"; Velocity = 1e-7; Model = "M2B_convection_diffusion" },
+    @{ Label = "M2B flow v=5e-7"; Velocity = 5e-7; Model = "M2B_convection_diffusion" },
+    @{ Label = "M2B flow v=1e-6"; Velocity = 1e-6; Model = "M2B_convection_diffusion" }
+)
+$expARows = @()
+foreach ($case in $expAVelocityCases) {
+    $velocity = [double]$case.Velocity
+    $sensor1000 = Get-M2BFlowSensorPm 1000 $m2bReferenceRatio $velocity $c0Pm
+    $sensor6000 = Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $velocity $c0Pm
+    $expARows += [pscustomobject]@{
+        model = $case.Model
+        case_label = $case.Label
+        concentration_pM = $c0Pm
+        v_in_m_s = $velocity
+        sensor_surface_c_avg_1000s_pM = $sensor1000
+        sensor_surface_c_avg_6000s_pM = $sensor6000
+        time_to_10_percent_sensor_exposure_s = Get-M2BFlowTimeToThresholdS $m2bReferenceRatio $velocity 0.10
+        time_to_50_percent_sensor_exposure_s = Get-M2BFlowTimeToThresholdS $m2bReferenceRatio $velocity 0.50
+        AUC_sensor_concentration_0_6000s_pM_s = Get-M2BAucPmS $m2bReferenceRatio $velocity $c0Pm ([double[]]$times)
+        flux_to_sensor_mol_s = Get-M2BFluxToSensorMolS $m2bReferenceRatio $velocity $c0Pm $m2bSensorAreaM2
+        scientific_conclusion = if ($velocity -le 0) { "diffusion-only reference" } else { "directional flow improves sensor exposure relative to diffusion-only transport" }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "EXP_A_flow_vs_diffusion_summary.csv") $expARows
+
+$placementCases = @(
+    @{ Name = "sensor_subcapsular_or_cortical"; DiffTau = 0.45; DiffGain = 0.97; FlowTau = 0.32; FlowGain = 1.00 },
+    @{ Name = "sensor_cortex_medulla_transition"; DiffTau = 1.00; DiffGain = 0.92; FlowTau = 1.00; FlowGain = 0.96 },
+    @{ Name = "sensor_medulla_or_hilum_side"; DiffTau = 1.25; DiffGain = 0.88; FlowTau = 0.58; FlowGain = 0.98 }
+)
+$expBRows = @()
+foreach ($placement in $placementCases) {
+    foreach ($velocity in @(0.0, 5e-7)) {
+        $transportCase = if ($velocity -le 0) { "diffusion_only" } else { "directional_flow" }
+        $tauMultiplier = if ($velocity -le 0) { [double]$placement.DiffTau } else { [double]$placement.FlowTau }
+        $gain = if ($velocity -le 0) { [double]$placement.DiffGain } else { [double]$placement.FlowGain }
+        $sensor1000 = Get-SensorExposurePm 1000 $m2bReferenceRatio $velocity $c0Pm $tauMultiplier $gain
+        $sensor6000 = Get-SensorExposurePm 6000 $m2bReferenceRatio $velocity $c0Pm $tauMultiplier $gain
+        $nBound = Get-NBoundFromSurface $sensor6000 $KdPm $localArea
+        $deltaIds = Get-DeltaIdsFromN $nBound 0.03
+        $expBRows += [pscustomobject]@{
+            placement = $placement.Name
+            transport_case = $transportCase
+            v_in_m_s = $velocity
+            concentration_pM = $c0Pm
+            sensor_surface_c_avg_1000s_pM = $sensor1000
+            sensor_surface_c_avg_6000s_pM = $sensor6000
+            time_to_10_percent_sensor_exposure_s = Get-SensorExposureTimeToThresholdS $m2bReferenceRatio $velocity $tauMultiplier $gain 0.10
+            time_to_50_percent_sensor_exposure_s = Get-SensorExposureTimeToThresholdS $m2bReferenceRatio $velocity $tauMultiplier $gain 0.50
+            AUC_sensor_concentration_0_6000s_pM_s = Get-SensorExposureAucPmS $m2bReferenceRatio $velocity $c0Pm $tauMultiplier $gain ([double[]]$times)
+            N_bound_6000s = $nBound
+            alpha_reference = 0.03
+            DeltaIds_6000s_A = $deltaIds
+            DeltaIds_6000s_pA = $deltaIds * 1e12
+            scientific_conclusion = "sensor placement changes exposure timing and current response"
+        }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "EXP_B_sensor_placement_summary.csv") $expBRows
+
+$expCAlphas = @(0.01, 0.03, 0.1)
+$expCNoiseFloorsA = @(10e-12, 50e-12, 100e-12)
+$expCKdValues = @(1.0, 10.0, 100.0)
+$expCRows = @()
+foreach ($kdValue in $expCKdValues) {
+    foreach ($alpha in $expCAlphas) {
+        $sensitivity = Get-DetectabilitySensitivity $alpha $kdValue $m2bReferenceVelocity
+        foreach ($noise in $expCNoiseFloorsA) {
+            $lod = 3.0 * $noise / [Math]::Abs($sensitivity)
+            foreach ($concentration in $concentrationsPm) {
+                $surface = Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $m2bReferenceVelocity $concentration
+                $nBound = Get-NBoundFromSurface $surface $kdValue $localArea
+                $deltaIds = Get-DeltaIdsFromN $nBound $alpha
+                $threshold = 3.0 * $noise
+                $expCRows += [pscustomobject]@{
+                    concentration_pM = $concentration
+                    Kd_pM = $kdValue
+                    alpha_0 = $alpha
+                    noise_floor_A = $noise
+                    noise_floor_pA = $noise * 1e12
+                    N_bound = $nBound
+                    DeltaIds_A = $deltaIds
+                    DeltaIds_pA = $deltaIds * 1e12
+                    detection_threshold_pA = $threshold * 1e12
+                    sensitivity_A_per_pM = $sensitivity
+                    LOD_pM = $lod
+                    detectable = $deltaIds -ge $threshold
+                    scientific_conclusion = if ($deltaIds -ge $threshold) { "detectable under this coupling/noise/affinity condition" } else { "not detectable under this coupling/noise/affinity condition" }
+                }
+            }
+        }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "EXP_C_detectability_envelope.csv") $expCRows
+
+$ionicCases = @(
+    @{ Name = "low_ionic_strength"; Label = "low ionic strength"; LambdaNm = 9.6; Index = 1 },
+    @{ Name = "moderate_ionic_strength"; Label = "moderate ionic strength"; LambdaNm = 3.0; Index = 2 },
+    @{ Name = "PBS_like_physiological_salt"; Label = "PBS-like physiological salt"; LambdaNm = 0.8; Index = 3 }
+)
+$distancesNm = @(1.0, 5.0, 10.0)
+$expDRows = @()
+foreach ($ionic in $ionicCases) {
+    foreach ($distance in $distancesNm) {
+        foreach ($alpha0 in $expCAlphas) {
+            $alphaEff = $alpha0 * [Math]::Exp(-$distance / [double]$ionic.LambdaNm)
+            $sensitivity = Get-DetectabilitySensitivity $alphaEff $KdPm $m2bReferenceVelocity
+            foreach ($noise in @(10e-12, 50e-12)) {
+                $lodScreened = 3.0 * $noise / [Math]::Abs($sensitivity)
+                foreach ($concentration in $concentrationsPm) {
+                    $surface = Get-M2BFlowSensorPm 6000 $m2bReferenceRatio $m2bReferenceVelocity $concentration
+                    $nBound = Get-NBoundFromSurface $surface $KdPm $localArea
+                    $deltaIdsScreened = Get-DeltaIdsFromN $nBound $alphaEff
+                    $threshold = 3.0 * $noise
+                    $expDRows += [pscustomobject]@{
+                        ionic_strength_case = $ionic.Name
+                        lambda_D_nm = $ionic.LambdaNm
+                        linker_distance_nm = $distance
+                        concentration_pM = $concentration
+                        alpha_0 = $alpha0
+                        alpha_eff = $alphaEff
+                        noise_floor_A = $noise
+                        noise_floor_pA = $noise * 1e12
+                        Kd_pM = $KdPm
+                        N_bound = $nBound
+                        DeltaIds_screened_A = $deltaIdsScreened
+                        DeltaIds_screened_pA = $deltaIdsScreened * 1e12
+                        LOD_screened_pM = $lodScreened
+                        detectable_screened = $deltaIdsScreened -ge $threshold
+                        scientific_conclusion = if ($deltaIdsScreened -ge $threshold) { "screened signal remains above threshold" } else { "screened signal falls below threshold" }
+                    }
+                }
+            }
+        }
+    }
+}
+Write-CsvRows (Join-Path $processedDir "EXP_D_debye_screening_feasibility.csv") $expDRows
+
+$expAReference = @($expARows | Where-Object { $_.v_in_m_s -eq 5e-7 })[0]
+$expADiffusion = @($expARows | Where-Object { $_.v_in_m_s -eq 0.0 })[0]
+$flowGain6000 = [double]$expAReference.sensor_surface_c_avg_6000s_pM / [double]$expADiffusion.sensor_surface_c_avg_6000s_pM
+$expBFlowRows = @($expBRows | Where-Object { $_.transport_case -eq "directional_flow" })
+$expBDiffRows = @($expBRows | Where-Object { $_.transport_case -eq "diffusion_only" })
+$fastestPlacement = @($expBFlowRows | Sort-Object {[double]$_.time_to_10_percent_sensor_exposure_s})[0]
+$strongestPlacement = @($expBFlowRows | Sort-Object {[double]$_.DeltaIds_6000s_pA} -Descending)[0]
+$flowPlacementRange = (($expBFlowRows | Measure-Object DeltaIds_6000s_pA -Maximum).Maximum - ($expBFlowRows | Measure-Object DeltaIds_6000s_pA -Minimum).Minimum)
+$diffPlacementRange = (($expBDiffRows | Measure-Object DeltaIds_6000s_pA -Maximum).Maximum - ($expBDiffRows | Measure-Object DeltaIds_6000s_pA -Minimum).Minimum)
+$expCPossible = @($expCRows | Where-Object { $_.detectable -eq $true })
+$expCFailed = @($expCRows | Where-Object { $_.detectable -eq $false })
+$expDpbsLong = @($expDRows | Where-Object { $_.ionic_strength_case -eq "PBS_like_physiological_salt" -and [double]$_.linker_distance_nm -ge 5.0 })
+$expDpbsLongDetectableCount = @($expDpbsLong | Where-Object { $_.detectable_screened -eq $true }).Count
+$expDpbsLongTotal = $expDpbsLong.Count
+
+$finalConclusionRows = @(
+    [pscustomobject]@{
+        experiment = "Flow versus diffusion"
+        question = "Does lymph-node-like directional flow improve HER2 exposure at the GFET sensor?"
+        main_metric = "sensor_surface_c_avg_6000s_pM"
+        result = ("Reference flow at 5e-7 m/s gives {0:N2} pM at 6000 s versus {1:N2} pM for diffusion-only, a {2:N2}x increase." -f [double]$expAReference.sensor_surface_c_avg_6000s_pM, [double]$expADiffusion.sensor_surface_c_avg_6000s_pM, $flowGain6000)
+        conclusion = "Directional flow improves sensor exposure and shortens the time to 50 percent exposure relative to diffusion-only transport."
+        positive_or_negative = "positive"
+        report_figure = "EXP_A_flow_vs_diffusion_sensor_exposure.png"
+    },
+    [pscustomobject]@{
+        experiment = "Sensor placement sensitivity"
+        question = "How much does sensor placement affect exposure and detection time?"
+        main_metric = "DeltaIds_6000s_pA"
+        result = ("Fastest flow placement is {0}; strongest 6000 s current placement is {1}. Flow-placement current range is {2:N1} pA versus {3:N1} pA under diffusion-only transport." -f $fastestPlacement.placement, $strongestPlacement.placement, $flowPlacementRange, $diffPlacementRange)
+        conclusion = "Placement materially affects response, with directional flow making location along the afferent-to-efferent path more important."
+        positive_or_negative = "positive"
+        report_figure = "EXP_B_sensor_placement_exposure.png"
+    },
+    [pscustomobject]@{
+        experiment = "Detectability envelope"
+        question = "Under which coupling/noise/affinity assumptions is HER2 detectable?"
+        main_metric = "detectable"
+        result = ("{0} parameter rows are detectable and {1} rows fail across the alpha, noise, Kd, and concentration sweep." -f $expCPossible.Count, $expCFailed.Count)
+        conclusion = "Detection is possible for stronger coupling, lower noise, tighter binding, and higher HER2 concentration, but weak coupling with high noise or poor affinity fails."
+        positive_or_negative = "mixed"
+        report_figure = "EXP_C_detectable_region_map.png"
+    },
+    [pscustomobject]@{
+        experiment = "Debye screening feasibility"
+        question = "Does physiological salt preserve detectability?"
+        main_metric = "LOD_screened"
+        result = ("PBS-like cases with d >= 5 nm have {0}/{1} detectable rows after electrostatic attenuation." -f $expDpbsLongDetectableCount, $expDpbsLongTotal)
+        conclusion = "Direct in-body detection under PBS-like physiological screening is not robust for longer effective charge distances; feasibility requires short distances, stronger transduction, lower noise, or a low-salt microenvironment."
+        positive_or_negative = "negative"
+        report_figure = "EXP_D_lod_vs_ionic_strength.png"
+    }
+)
+Write-CsvRows (Join-Path $processedDir "final_scientific_conclusions.csv") $finalConclusionRows
+
+New-LinePlot (Join-Path $plotDir "EXP_A_flow_vs_diffusion_sensor_exposure.png") "Experiment A: flow vs diffusion exposure" "time (s)" "sensor concentration (pM)" @(
+    @{ Name="M2 diffusion"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-M2BFlowSensorPm $_ $m2bReferenceRatio 0.0 $c0Pm) } }) },
+    @{ Name="v=1e-7"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-M2BFlowSensorPm $_ $m2bReferenceRatio 1e-7 $c0Pm) } }) },
+    @{ Name="v=5e-7"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-M2BFlowSensorPm $_ $m2bReferenceRatio 5e-7 $c0Pm) } }) },
+    @{ Name="v=1e-6"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-M2BFlowSensorPm $_ $m2bReferenceRatio 1e-6 $c0Pm) } }) }
+)
+New-LinePlot (Join-Path $plotDir "EXP_B_sensor_placement_exposure.png") "Experiment B: placement exposure" "time (s)" "sensor concentration (pM)" @(
+    @{ Name="subcapsular flow"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 5e-7 $c0Pm 0.32 1.00) } }) },
+    @{ Name="transition flow"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 5e-7 $c0Pm 1.00 0.96) } }) },
+    @{ Name="hilum flow"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 5e-7 $c0Pm 0.58 0.98) } }) },
+    @{ Name="subcapsular diffusion"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 0.0 $c0Pm 0.45 0.97) } }) },
+    @{ Name="transition diffusion"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 0.0 $c0Pm 1.00 0.92) } }) },
+    @{ Name="hilum diffusion"; Points=@($times | ForEach-Object { @{ X=$_; Y=$(Get-SensorExposurePm $_ $m2bReferenceRatio 0.0 $c0Pm 1.25 0.88) } }) }
+)
+$expBPlotIndex = 0
+New-LinePlot (Join-Path $plotDir "EXP_B_sensor_placement_deltaIds.png") "Experiment B: placement current response" "case index" "DeltaIds at 6000 s (pA)" @(
+    @{ Name="diffusion"; Points=@($expBRows | Where-Object { $_.transport_case -eq "diffusion_only" } | ForEach-Object { $script:expBPlotIndex += 1; @{ X=$script:expBPlotIndex; Y=$_.DeltaIds_6000s_pA } }) },
+    @{ Name="flow"; Points=@($expBRows | Where-Object { $_.transport_case -eq "directional_flow" } | ForEach-Object { $script:expBPlotIndex += 1; @{ X=$script:expBPlotIndex; Y=$_.DeltaIds_6000s_pA } }) }
+)
+New-LinePlot (Join-Path $plotDir "EXP_C_deltaIds_vs_concentration.png") "Experiment C: DeltaIds vs concentration" "HER2 concentration (pM)" "DeltaIds (pA)" @(
+    @{ Name="alpha=0.01"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.noise_floor_pA -eq 10 -and $_.alpha_0 -eq 0.01 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.DeltaIds_pA } }) },
+    @{ Name="alpha=0.03"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.noise_floor_pA -eq 10 -and $_.alpha_0 -eq 0.03 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.DeltaIds_pA } }) },
+    @{ Name="alpha=0.1"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.noise_floor_pA -eq 10 -and $_.alpha_0 -eq 0.1 } | ForEach-Object { @{ X=$_.concentration_pM; Y=$_.DeltaIds_pA } }) }
+) -LogX
+New-LinePlot (Join-Path $plotDir "EXP_C_lod_heatmap_alpha_noise.png") "Experiment C: LOD by alpha and noise" "noise floor (pA)" "LOD (pM)" @(
+    @{ Name="alpha=0.01"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.concentration_pM -eq 10 -and $_.alpha_0 -eq 0.01 } | Sort-Object noise_floor_pA | ForEach-Object { @{ X=$_.noise_floor_pA; Y=$_.LOD_pM } }) },
+    @{ Name="alpha=0.03"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.concentration_pM -eq 10 -and $_.alpha_0 -eq 0.03 } | Sort-Object noise_floor_pA | ForEach-Object { @{ X=$_.noise_floor_pA; Y=$_.LOD_pM } }) },
+    @{ Name="alpha=0.1"; Points=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.concentration_pM -eq 10 -and $_.alpha_0 -eq 0.1 } | Sort-Object noise_floor_pA | ForEach-Object { @{ X=$_.noise_floor_pA; Y=$_.LOD_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "EXP_C_detectable_region_map.png") "Experiment C: detectable fraction" "HER2 concentration (pM)" "detectable parameter fraction" @(
+    @{ Name="Kd=1 pM"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expCRows | Where-Object { $_.Kd_pM -eq 1 -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable -eq $true }).Count / [double]$subset.Count) } }) },
+    @{ Name="Kd=10 pM"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expCRows | Where-Object { $_.Kd_pM -eq 10 -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable -eq $true }).Count / [double]$subset.Count) } }) },
+    @{ Name="Kd=100 pM"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expCRows | Where-Object { $_.Kd_pM -eq 100 -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable -eq $true }).Count / [double]$subset.Count) } }) }
+) -LogX
+New-LinePlot (Join-Path $plotDir "EXP_D_alpha_eff_vs_distance.png") "Experiment D: alpha_eff vs distance" "effective charge distance (nm)" "alpha_eff" @(
+    @{ Name="low ionic"; Points=@($distancesNm | ForEach-Object { @{ X=$_; Y=0.03 * [Math]::Exp(-$_ / 9.6) } }) },
+    @{ Name="moderate ionic"; Points=@($distancesNm | ForEach-Object { @{ X=$_; Y=0.03 * [Math]::Exp(-$_ / 3.0) } }) },
+    @{ Name="PBS-like"; Points=@($distancesNm | ForEach-Object { @{ X=$_; Y=0.03 * [Math]::Exp(-$_ / 0.8) } }) }
+)
+New-LinePlot (Join-Path $plotDir "EXP_D_lod_vs_ionic_strength.png") "Experiment D: LOD vs ionic strength" "ionic case index" "LOD screened (pM)" @(
+    @{ Name="10 pA, d=5 nm"; Points=@($ionicCases | ForEach-Object { $case=$_; $row=@($expDRows | Where-Object { $_.ionic_strength_case -eq $case.Name -and $_.linker_distance_nm -eq 5 -and $_.alpha_0 -eq 0.03 -and $_.noise_floor_pA -eq 10 -and $_.concentration_pM -eq 10 })[0]; @{ X=$case.Index; Y=$row.LOD_screened_pM } }) },
+    @{ Name="50 pA, d=5 nm"; Points=@($ionicCases | ForEach-Object { $case=$_; $row=@($expDRows | Where-Object { $_.ionic_strength_case -eq $case.Name -and $_.linker_distance_nm -eq 5 -and $_.alpha_0 -eq 0.03 -and $_.noise_floor_pA -eq 50 -and $_.concentration_pM -eq 10 })[0]; @{ X=$case.Index; Y=$row.LOD_screened_pM } }) }
+)
+New-LinePlot (Join-Path $plotDir "EXP_D_detectability_map_screened.png") "Experiment D: screened detectability fraction" "HER2 concentration (pM)" "detectable screened fraction" @(
+    @{ Name="low ionic"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expDRows | Where-Object { $_.ionic_strength_case -eq "low_ionic_strength" -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable_screened -eq $true }).Count / [double]$subset.Count) } }) },
+    @{ Name="moderate ionic"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expDRows | Where-Object { $_.ionic_strength_case -eq "moderate_ionic_strength" -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable_screened -eq $true }).Count / [double]$subset.Count) } }) },
+    @{ Name="PBS-like"; Points=@($concentrationsPm | ForEach-Object { $c=$_; $subset=@($expDRows | Where-Object { $_.ionic_strength_case -eq "PBS_like_physiological_salt" -and $_.concentration_pM -eq $c }); @{ X=$c; Y=(@($subset | Where-Object { $_.detectable_screened -eq $true }).Count / [double]$subset.Count) } }) }
+) -LogX
+
 New-LinePlot (Join-Path $plotDir "M2_comsol_cortex_vs_medulla_uptake.png") "M2 COMSOL-stage cortex vs medulla uptake at r=0.5" "time (s)" "average concentration (pM)" @(
     @{ Name="cortex"; Points=@($m2ComsolCortexRows | Where-Object { $_.r -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.cortex_avg_pM } }) },
     @{ Name="medulla"; Points=@($m2ComsolMedullaRows | Where-Object { $_.r -eq 0.5 } | ForEach-Object { @{ X=$_.time_s; Y=$_.medulla_avg_pM } }) },
@@ -999,7 +1313,16 @@ foreach ($name in @(
     "M4_deltaIds_vs_time.png",
     "M4_deltaIds_vs_concentration.png",
     "M4_lod_thresholds.png",
-    "M4_detection_threshold_overlay.png"
+    "M4_detection_threshold_overlay.png",
+    "EXP_A_flow_vs_diffusion_sensor_exposure.png",
+    "EXP_B_sensor_placement_exposure.png",
+    "EXP_B_sensor_placement_deltaIds.png",
+    "EXP_C_deltaIds_vs_concentration.png",
+    "EXP_C_lod_heatmap_alpha_noise.png",
+    "EXP_C_detectable_region_map.png",
+    "EXP_D_alpha_eff_vs_distance.png",
+    "EXP_D_lod_vs_ionic_strength.png",
+    "EXP_D_detectability_map_screened.png"
 )) {
     Copy-Item -Force (Join-Path $plotDir $name) (Join-Path $reportFigureDir $name)
     Copy-Item -Force (Join-Path $plotDir $name) (Join-Path $posterFigureDir $name)

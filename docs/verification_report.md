@@ -104,6 +104,11 @@
 - [x] `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv` exists.
 - [x] `results/processed_csv/M2B_velocity_sweep_summary.csv` exists.
 - [x] `results/processed_csv/M2B_mesh_sensitivity.csv` exists.
+- [x] `results/processed_csv/EXP_A_flow_vs_diffusion_summary.csv` exists.
+- [x] `results/processed_csv/EXP_B_sensor_placement_summary.csv` exists.
+- [x] `results/processed_csv/EXP_C_detectability_envelope.csv` exists.
+- [x] `results/processed_csv/EXP_D_debye_screening_feasibility.csv` exists.
+- [x] `results/processed_csv/final_scientific_conclusions.csv` exists.
 - [x] `results/processed_csv/M4_lod_summary.csv` exists.
 - [x] Report-ready figures exist in `results/figures_for_report`.
 - [x] Poster-ready figures exist in `results/figures_for_poster`.
