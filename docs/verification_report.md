@@ -7,7 +7,7 @@
 | M1 0D binding | `comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.mph` | Pass | COMSOL batch build completed. |
 | M2 3D transport | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph` | Pass with limitation | Meshed TDS solve completed; direct field-table export is not yet automated. |
 | M2 diffusivity sweep | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_sweep_r_*.mph` | Pass with limitation | Batch sweep completed for all five `r` values; CSV metrics are post-processed transport metrics. |
-| M2B anatomical flow | `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph` | Pass with limitation | Separate prescribed-velocity flow extension built without overwriting M2 diffusion. |
+| M2B anatomical flow | `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph` | Pass with limitation | Separate convection-diffusion extension built and solved without overwriting M2 diffusion. |
 | M3 full boundary | `comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.mph` | Pass | Surface binding recomputed from M2 sensor concentration. |
 | M3 local sensor | `comsol/models/M3_surface_binding/M3_surface_binding_local_sensor_v01.mph` | Pass | Local GFET-scale binding output generated. |
 | M4 GFET response | `comsol/models/M4_gfet_response/M4_gfet_current_response_v01.mph` | Pass | Current response and LOD computed from M3 bound molecule count. |
@@ -22,7 +22,7 @@
 | `kr/kf` | 10e-12 | 10e-12 | M | Pass |
 | `Dcortex` | 8e-11 | 8e-11 | m^2/s | Pass |
 | `r` sweep | 0.1 to 1.0 | 0.1 to 1.0 | - | Pass |
-| `v_in` sweep | 1e-7 to 1e-6 | 1e-7 to 1e-6 | m/s | Pass |
+| `v_in` sweep | 0 to 1e-6 | 0 to 1e-6 | m/s | Pass |
 | `W/L` | 10 | 10 | - | Pass |
 | `Vds` | 0.05 | 0.05 | V | Pass |
 | `Aeff` | 4e-11 | 4e-11 | m^2 | Pass |
@@ -35,8 +35,9 @@
 - [x] M2B includes subcapsular sinus, cortex, and medulla named selections.
 - [x] M2B includes four afferent inlet selections and one efferent outlet selection.
 - [x] M2B includes local and full sensor selections.
+- [x] M2B afferent inlet selections are coordinate-based and distinct from the efferent outlet selection.
 - [x] Local and full sensor configurations are represented separately in M3 files.
-- [ ] Direct Java assignment of exact anatomical inlet/outlet boundary IDs remains limited in this version.
+- [x] Java assigns concentration features to afferent inlet selections instead of all boundaries.
 
 ## Physics Verification
 
@@ -48,6 +49,8 @@
 - [x] M2 concentration metrics are nonnegative in exported CSV files.
 - [x] M2 medulla uptake delay decreases as diffusivity ratio approaches 1.
 - [x] M2B uses a separate COMSOL model file and does not overwrite the M2 diffusion baseline.
+- [x] M2B sets TDS convection velocity to `u_flow`, `v_flow`, and `w_flow`.
+- [x] M2B time-dependent study solves the velocity sweep `v_in = 0, 1e-7, 5e-7, 1e-6 m/s`.
 - [x] M2B velocity sweep outputs are nonnegative and preserve inlet/outlet balance within the documented proxy tolerance.
 - [x] M2B sensor exposure increases relative to the M2 diffusion-only baseline under the reference prescribed velocity.
 - [x] M3 occupancy remains between 0 and 1.
@@ -72,6 +75,13 @@
 - [x] Higher HER2 concentration gives higher `DeltaIds`.
 - [x] Lower medulla diffusivity gives larger uptake delay.
 - [x] Prescribed velocity reduces M2B sensor-arrival delay relative to M2 diffusion under the reference scenario.
+- [x] `v_in = 0` gives diffusion-like behavior.
+- [x] Increasing `v_in` changes sensor exposure.
+- [x] Directional flow produces spatial asymmetry in the flow-profile plots.
+- [x] Afferent-to-efferent direction is visible in the streamline/velocity figure.
+- [x] HER2 concentration stays nonnegative.
+- [x] Concentration does not exceed inlet concentration by unreasonable numerical overshoot.
+- [x] Mesh sensitivity was checked for the reference `v_in = 5e-7 m/s` case.
 - [x] Higher coupling efficiency gives larger `DeltaIds`.
 - [x] Higher noise floor gives larger minimum detectable molecule count.
 
@@ -92,6 +102,7 @@
 - [x] `results/processed_csv/M2B_flow_delay_vs_diffusivity_ratio.csv` exists.
 - [x] `results/processed_csv/M2B_flow_pressure_or_velocity_sweep.csv` exists.
 - [x] `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv` exists.
+- [x] `results/processed_csv/M2B_velocity_sweep_summary.csv` exists.
 - [x] `results/processed_csv/M2B_mesh_sensitivity.csv` exists.
 - [x] `results/processed_csv/M4_lod_summary.csv` exists.
 - [x] Report-ready figures exist in `results/figures_for_report`.
@@ -101,7 +112,8 @@
 
 - Direct COMSOL table export from solved `.mph` field probes is not yet automated.
 - The M2 source boundary is implemented as the Java-selected source boundary set rather than a manually curated anatomical inlet/outlet pair.
-- M2B uses prescribed-velocity flow and post-processed concentration metrics; it is not a fully validated Darcy-flow or full anatomical lymph-node model.
+- M2B uses prescribed velocity rather than a Darcy-flow pressure solve; it is not a full anatomical lymph-node model.
+- M2B tabular metrics remain post-processed from the documented velocity-sweep equations because direct COMSOL field-table export is not automated.
 - M3 binding is analytically recomputed from M2 sensor concentration rather than solved as a fully coupled surface-reaction PDE.
 - GFET response is analytical and does not claim full graphene semiconductor validation.
 - Debye screening is documented as a limitation rather than solved explicitly.
@@ -110,4 +122,4 @@
 
 Accepted with documented limitations.
 
-The repository is suitable for final report drafting if the report states that M2 contains a meshed COMSOL TDS solve and sweep evidence, M2B is a prescribed-velocity anatomical-flow extension, and tabular M2/M2B metrics are COMSOL-stage post-processed outputs rather than raw COMSOL field-table exports.
+The repository is suitable for final report drafting if the report states that M2 contains a meshed COMSOL TDS solve and sweep evidence, M2B is a prescribed-velocity convection-diffusion extension, and tabular M2/M2B metrics are COMSOL-stage post-processed outputs rather than raw COMSOL field-table exports.

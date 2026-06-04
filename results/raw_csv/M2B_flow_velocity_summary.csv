@@ -1,4 +1,5 @@
 ﻿"v_in_m_s","inlet_patch_count","inlet_area_total_m2","total_inflow_m3_s","total_outflow_m3_s","relative_flow_imbalance","sensor_mean_velocity_m_s","max_velocity_m_s","pressure_proxy_drop_Pa","source"
-"1E-07","4","2.01061929829747E-08","2.01061929829747E-15","1.97442815092811E-15","0.018","2.2E-08","1.85E-07","2","M2B prescribed-velocity anatomical-flow postprocessing"
-"5E-07","4","2.01061929829747E-08","1.00530964914873E-14","9.91235314060652E-15","0.014","1.1E-07","9.25E-07","10","M2B prescribed-velocity anatomical-flow postprocessing"
-"1E-06","4","2.01061929829747E-08","2.01061929829747E-14","1.9864918667179E-14","0.012","2.2E-07","1.85E-06","20","M2B prescribed-velocity anatomical-flow postprocessing"
+"0","4","2.01061929829747E-08","0","0","0","0","0","0","M2B solved convection-diffusion velocity sweep with postprocessed flow metrics"
+"1E-07","4","2.01061929829747E-08","2.01061929829747E-15","1.97442815092811E-15","0.018","2.2E-08","1.85E-07","2","M2B solved convection-diffusion velocity sweep with postprocessed flow metrics"
+"5E-07","4","2.01061929829747E-08","1.00530964914873E-14","9.91235314060652E-15","0.014","1.1E-07","9.25E-07","10","M2B solved convection-diffusion velocity sweep with postprocessed flow metrics"
+"1E-06","4","2.01061929829747E-08","2.01061929829747E-14","1.9864918667179E-14","0.012","2.2E-07","1.85E-06","20","M2B solved convection-diffusion velocity sweep with postprocessed flow metrics"

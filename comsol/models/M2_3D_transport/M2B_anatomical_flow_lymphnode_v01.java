@@ -70,28 +70,17 @@ public class M2B_anatomical_flow_lymphnode_v01 {
 
     model.component("comp1").geom("geom1").run();
 
-    model.component("comp1").selection().create("domain_subcapsular_sinus", "Explicit");
-    model.component("comp1").selection("domain_subcapsular_sinus").label("domain_subcapsular_sinus");
-    model.component("comp1").selection().create("domain_cortex", "Explicit");
-    model.component("comp1").selection("domain_cortex").label("domain_cortex");
-    model.component("comp1").selection().create("domain_medulla", "Explicit");
-    model.component("comp1").selection("domain_medulla").label("domain_medulla");
-    model.component("comp1").selection().create("boundary_afferent_inlet_1", "Explicit");
-    model.component("comp1").selection("boundary_afferent_inlet_1").label("boundary_afferent_inlet_1");
-    model.component("comp1").selection().create("boundary_afferent_inlet_2", "Explicit");
-    model.component("comp1").selection("boundary_afferent_inlet_2").label("boundary_afferent_inlet_2");
-    model.component("comp1").selection().create("boundary_afferent_inlet_3", "Explicit");
-    model.component("comp1").selection("boundary_afferent_inlet_3").label("boundary_afferent_inlet_3");
-    model.component("comp1").selection().create("boundary_afferent_inlet_4", "Explicit");
-    model.component("comp1").selection("boundary_afferent_inlet_4").label("boundary_afferent_inlet_4");
-    model.component("comp1").selection().create("boundary_efferent_outlet", "Explicit");
-    model.component("comp1").selection("boundary_efferent_outlet").label("boundary_efferent_outlet");
-    model.component("comp1").selection().create("boundary_capsule_no_flow", "Explicit");
-    model.component("comp1").selection("boundary_capsule_no_flow").label("boundary_capsule_no_flow");
-    model.component("comp1").selection().create("boundary_sensor_local", "Explicit");
-    model.component("comp1").selection("boundary_sensor_local").label("boundary_sensor_local");
-    model.component("comp1").selection().create("boundary_sensor_full", "Explicit");
-    model.component("comp1").selection("boundary_sensor_full").label("boundary_sensor_full");
+    createBoxSelection(model, "domain_subcapsular_sinus", 3, -520, 520, -520, 520, -520, 520);
+    createBoxSelection(model, "domain_cortex", 3, -430, 430, -430, 430, -430, 430);
+    createBoxSelection(model, "domain_medulla", 3, -250, 250, -250, 250, -250, 250);
+    createBoxSelection(model, "boundary_afferent_inlet_1", 2, -60, 60, 430, 540, 70, 170);
+    createBoxSelection(model, "boundary_afferent_inlet_2", 2, 210, 320, 340, 460, 40, 150);
+    createBoxSelection(model, "boundary_afferent_inlet_3", 2, -320, -210, 340, 460, 40, 150);
+    createBoxSelection(model, "boundary_afferent_inlet_4", 2, -60, 60, 310, 430, -310, -190);
+    createBoxSelection(model, "boundary_efferent_outlet", 2, -80, 80, -540, -420, -80, 80);
+    createBoxSelection(model, "boundary_capsule_no_flow", 2, -520, 520, -520, 520, -520, 520);
+    createBoxSelection(model, "boundary_sensor_local", 2, -50, 50, -270, -180, 70, 170);
+    createBoxSelection(model, "boundary_sensor_full", 2, -300, 300, -310, -150, -300, 300);
 
     model.component("comp1").variable().create("var1");
     model.component("comp1").variable("var1").label("Prescribed porous-flow velocity field");
@@ -107,7 +96,16 @@ public class M2B_anatomical_flow_lymphnode_v01 {
     model.component("comp1").physics("tds").field("concentration").field("c");
     model.component("comp1").physics("tds").field("concentration").component(new String[]{"c"});
     model.component("comp1").physics("tds").feature("cdm1").set("D_c", "D_region");
+    model.component("comp1").physics("tds").feature("cdm1").set("u_src", "userdef");
+    model.component("comp1").physics("tds").feature("cdm1").set("u", new String[]{"u_flow", "v_flow", "w_flow"});
     model.component("comp1").physics("tds").feature("init1").set("initc", "0");
+    createInletConcentration(model, "conc1", "boundary_afferent_inlet_1");
+    createInletConcentration(model, "conc2", "boundary_afferent_inlet_2");
+    createInletConcentration(model, "conc3", "boundary_afferent_inlet_3");
+    createInletConcentration(model, "conc4", "boundary_afferent_inlet_4");
+    model.component("comp1").physics("tds").create("out1", "Outflow", 2);
+    model.component("comp1").physics("tds").feature("out1").label("Hilum-side efferent outlet");
+    model.component("comp1").physics("tds").feature("out1").selection().named("boundary_efferent_outlet");
 
     model.component("comp1").mesh().create("mesh1");
     model.component("comp1").mesh("mesh1").autoMeshSize(4);
@@ -116,8 +114,33 @@ public class M2B_anatomical_flow_lymphnode_v01 {
     model.study().create("std1");
     model.study("std1").create("time", "Transient");
     model.study("std1").feature("time").set("tlist", "0 100 500 1000 2000 4000 6000");
+    model.study("std1").create("param", "Parametric");
+    model.study("std1").feature("param").set("pname", new String[]{"v_in"});
+    model.study("std1").feature("param").set("plistarr", new String[]{"0 1e-7 5e-7 1e-6"});
+    model.study("std1").feature("param").set("punit", new String[]{"m/s"});
+    model.study("std1").run();
 
     return model;
+  }
+
+  private static void createBoxSelection(Model model, String tag, int entityDim, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) {
+    model.component("comp1").selection().create(tag, "Box");
+    model.component("comp1").selection(tag).label(tag);
+    model.component("comp1").selection(tag).set("entitydim", Integer.toString(entityDim));
+    model.component("comp1").selection(tag).set("condition", "intersects");
+    model.component("comp1").selection(tag).set("xmin", Double.toString(xmin));
+    model.component("comp1").selection(tag).set("xmax", Double.toString(xmax));
+    model.component("comp1").selection(tag).set("ymin", Double.toString(ymin));
+    model.component("comp1").selection(tag).set("ymax", Double.toString(ymax));
+    model.component("comp1").selection(tag).set("zmin", Double.toString(zmin));
+    model.component("comp1").selection(tag).set("zmax", Double.toString(zmax));
+  }
+
+  private static void createInletConcentration(Model model, String tag, String selectionTag) {
+    model.component("comp1").physics("tds").create(tag, "Concentration", 2);
+    model.component("comp1").physics("tds").feature(tag).label("HER2 concentration at " + selectionTag);
+    model.component("comp1").physics("tds").feature(tag).selection().named(selectionTag);
+    model.component("comp1").physics("tds").feature(tag).set("c0", "c0_mol_m3");
   }
 
   public static void main(String[] args) {

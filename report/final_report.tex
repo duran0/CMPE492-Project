@@ -11,7 +11,7 @@
 \maketitle
 
 \begin{abstract}
-This project develops a simulation workflow for HER2 antigen detection using an antibody-functionalized graphene field-effect transistor (GFET). The model links HER2 transport, antibody binding, bound molecule count, GFET drain-source current modulation, sensitivity, and limit of detection (LOD). The current repository includes a meshed COMSOL Transport of Diluted Species model for the transport stage, a separate partially anatomical prescribed-flow extension, analytical surface-binding post-processing, and analytical GFET response calculations. Results are reported with documented limitations rather than experimental validation.
+This project develops a simulation workflow for HER2 antigen detection using an antibody-functionalized graphene field-effect transistor (GFET). The model links HER2 transport, antibody binding, bound molecule count, GFET drain-source current modulation, sensitivity, and limit of detection (LOD). The current repository includes a meshed COMSOL Transport of Diluted Species model for the transport stage, a separate partially anatomical convection-diffusion extension, analytical surface-binding post-processing, and analytical GFET response calculations. Results are reported with documented limitations rather than experimental validation.
 \end{abstract}
 
 \section{Introduction}
@@ -76,28 +76,28 @@ where \(r\) is swept over 0.1, 0.25, 0.5, 0.75, and 1.0. The current COMSOL mode
 \end{figure}
 
 \subsection{Partially Anatomical Lymph-Node Flow Extension}
-The M2B extension keeps the M2 diffusion-only model unchanged and adds a separate lymph-node-inspired flow scaffold. The geometry uses an outer node radius of approximately 500 \(\mu\)m, a medulla radius of approximately 250 \(\mu\)m, a subcapsular/cortex/medulla region structure, four afferent inlet markers, one efferent outlet marker, and local/full sensor markers. The model is intentionally described as partially anatomical because it captures transport-relevant regions and inlet/outlet structure without claiming full lymph-node anatomy.
+The M2B extension implements a partially anatomical convection-diffusion model with afferent inlet regions, a hilum-side efferent outlet, and a prescribed lymph-flow velocity field coupled to HER2 transport. It keeps the M2 diffusion-only model unchanged and adds a separate lymph-node-inspired flow scaffold. The geometry uses an outer node radius of approximately 500 \(\mu\)m, a medulla radius of approximately 250 \(\mu\)m, a subcapsular/cortex/medulla region structure, four afferent inlet markers, one efferent outlet marker, and local/full sensor markers. The model is intentionally described as partially anatomical because it captures transport-relevant regions and inlet/outlet structure without claiming full lymph-node anatomy.
 
-The flow implementation uses prescribed inlet velocities rather than a fully validated Darcy-flow solve. The velocity sweep is \(v_{in} = 10^{-7}, 5\times10^{-7}, 10^{-6}\) m/s. The M2B post-processing compares sensor exposure and delay against the preserved M2 diffusion baseline using the same transport time points and diffusivity-ratio sweep.
+The flow implementation uses prescribed inlet velocities rather than a fully validated Darcy-flow pressure solve. The Transport of Diluted Species convection velocity is set to \(u=u_{flow}\), \(v=v_{flow}\), and \(w=w_{flow}\). The velocity sweep is \(v_{in} = 0, 10^{-7}, 5\times10^{-7}, 10^{-6}\) m/s. The M2B post-processing compares sensor exposure and delay against the preserved M2 diffusion baseline using the same transport time points and diffusivity-ratio sweep.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{../results/figures_for_report/M2B_flow_velocity_streamlines.png}
-\caption{M2B prescribed-velocity streamline proxy for the partially anatomical flow extension.}
+\caption{M2B prescribed-velocity streamline profile for the partially anatomical convection-diffusion extension.}
 \label{fig:m2b_velocity}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{../results/figures_for_report/M2B_flow_concentration_slice_t1000s.png}
-\caption{M2B concentration profile proxy at 1000 s compared with the preserved diffusion baseline.}
+\caption{M2B concentration profile at 1000 s compared with the preserved diffusion baseline.}
 \label{fig:m2b_profile}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=\linewidth]{../results/figures_for_report/M2B_flow_vs_diffusion_sensor_exposure.png}
-\caption{Reference M2B prescribed-flow sensor exposure compared with M2 diffusion-only exposure.}
+\caption{Reference M2B convection-diffusion sensor exposure compared with M2 diffusion-only exposure.}
 \label{fig:m2b_exposure}
 \end{figure}
 
@@ -153,7 +153,7 @@ The diffusivity-ratio sweep shows that medulla uptake delay decreases as \(r\) a
 \end{figure}
 
 \subsection{M2B Flow Comparison}
-For the reference case \(r = 0.5\) and \(v_{in}=5\times10^{-7}\) m/s, the M2B prescribed-flow extension gives a sensor time-to-50\% exposure of approximately 1733 s, compared with approximately 5337 s for the M2 diffusion-only baseline. At 6000 s, the reported sensor concentration proxy is 8.73 pM for M2B and 4.98 pM for M2. These values support only the limited conclusion that the selected prescribed-flow extension increases sensor exposure relative to the diffusion-only baseline.
+For the reference case \(r = 0.5\) and \(v_{in}=5\times10^{-7}\) m/s, the M2B convection-diffusion extension gives a sensor time-to-50\% exposure of approximately 1839 s, compared with approximately 6038 s for the M2 diffusion-only baseline under the same sensor-exposure definition. At 6000 s, the reported sensor concentration is 8.73 pM for M2B and 4.98 pM for M2. The zero-flow M2B case gives the same 1000 s and 6000 s sensor concentration values as the diffusion-only baseline, while increasing \(v_{in}\) increases exposure. These values support only the limited conclusion that the selected prescribed-flow extension increases sensor exposure relative to the diffusion-only baseline.
 
 \subsection{Surface Binding Response}
 Surface occupancy remains bounded and full-boundary exposure produces a larger total bound molecule count than the local GFET-scale sensing region.
@@ -186,10 +186,10 @@ The current response increases with HER2 concentration and coupling efficiency. 
 The current results support the modeling claim that transport and surface exposure matter before transistor sensitivity can be interpreted. The response improves with higher coupling efficiency and lower noise floor, but sub-pM LOD is not universal across all assumptions.
 
 \section{Limitations}
-This project is simulation-only. No wet-lab validation, fabrication, clinical testing, biocompatibility analysis, or direct physiological Debye screening model is included. The M2 model is meshed and solved in COMSOL, but direct field-table export from solved \texttt{.mph} files remains a repository limitation. The M2B extension is a prescribed-velocity, partially anatomical transport scaffold rather than a validated Darcy-flow or full anatomical lymph-node model. Surface binding and GFET response are analytically post-processed rather than fully coupled inside COMSOL.
+This project is simulation-only. No wet-lab validation, fabrication, clinical testing, biocompatibility analysis, or direct physiological Debye screening model is included. The M2 model is meshed and solved in COMSOL, but direct field-table export from solved \texttt{.mph} files remains a repository limitation. The M2B extension couples prescribed velocity into Transport of Diluted Species, but it is not a validated Darcy-flow pressure solve or full anatomical lymph-node model. Surface binding and GFET response are analytically post-processed rather than fully coupled inside COMSOL.
 
 \section{Conclusion}
-The repository now implements a staged HER2-GFET workflow: 0D binding, meshed COMSOL transport, a separate partially anatomical prescribed-flow extension, surface binding from sensor concentration, and GFET current-response/LOD estimation. The model is suitable for final report drafting with the documented limitations stated explicitly.
+The repository now implements a staged HER2-GFET workflow: 0D binding, meshed COMSOL transport, a separate partially anatomical convection-diffusion extension, surface binding from sensor concentration, and GFET current-response/LOD estimation. The model is suitable for final report drafting with the documented limitations stated explicitly.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

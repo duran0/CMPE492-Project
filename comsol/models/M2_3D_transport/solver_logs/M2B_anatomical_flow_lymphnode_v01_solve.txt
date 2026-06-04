@@ -1,0 +1,343 @@
+*******************************************
+***COMSOL 6.2.0.339 progress output file***
+*******************************************
+Thu Jun 04 20:51:29 TRT 2026
+COMSOL Multiphysics 6.2 (Build: 339) starting in batch mode
+Running: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2B_anatomical_flow_lymphnode_v01.class
+---------- Current Progress: 100 % - Updating selections
+Memory: 467/467 500/500
+           Current Progress:   0 % - domain_subcapsular_sinus_and_cortex_outer_node
+Memory: 480/480 512/512
+           Current Progress:   5 % - domain_cortex_inner_sinus_reference
+Memory: 485/485 513/518
+-          Current Progress:  11 % - domain_medulla
+-          Current Progress:  16 % - boundary_afferent_inlet_1_marker
+--         Current Progress:  21 % - boundary_afferent_inlet_2_marker
+--         Current Progress:  26 % - boundary_afferent_inlet_3_marker
+---        Current Progress:  32 % - boundary_afferent_inlet_4_marker
+---        Current Progress:  37 % - boundary_efferent_outlet_marker
+----       Current Progress:  42 % - boundary_sensor_local_marker
+----       Current Progress:  47 % - Form Union
+----       Current Progress:  47 % - Performing Boolean operation
+Memory: 487/487 514/518
+---------- Current Progress: 100 % - Updating selections
+---------- Current Progress: 100 % - Creating visualization mesh
+Memory: 500/533 524/558
+Number of vertex elements: 90
+--         Current Progress:  22 % - Creating boundary mesh
+Memory: 551/551 568/569
+Number of edge elements: 897
+Number of boundary elements: 7792
+---        Current Progress:  35 % - Creating initial tetrahedra
+Memory: 547/551 566/569
+-----      Current Progress:  54 % - Improving element quality
+Memory: 555/556 572/574
+Number of elements: 40175
+Minimum element quality: 0.0397
+---------- Current Progress: 100 % - Finalizing mesh
+Memory: 548/556 566/574
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 4, 2026, 8:51:34 PM.
+Geometry shape function: Linear Lagrange
+Running on AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD.
+Using 1 socket with 6 cores in total on Duran-Desktop.
+Available memory: 32.42 GB.
+Parameter v_in = 0.0 (m/s).
+           Current Progress:   1 % - Compile Equations: Time Dependent
+Memory: 626/637 644/655
+Time: 1 s.
+Physical memory: 636 MB
+Virtual memory: 649 MB
+Ended at Jun 4, 2026, 8:51:35 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 4, 2026, 8:51:35 PM.
+           Current Progress:   1 % - Dependent Variables 1
+Memory: 642/642 654/655
+Solution time: 0 s.
+Physical memory: 642 MB
+Virtual memory: 654 MB
+Ended at Jun 4, 2026, 8:51:35 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 4, 2026, 8:51:35 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 7616 (plus 48275 internal DOFs).
+Symmetric matrices found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+           Current Progress:   1 % - Matrix factorization
+Memory: 660/701 672/712
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+           Current Progress:   1 % - Assembling matrices
+Memory: 746/746 760/760
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+           Current Progress:   2 % - Assembling matrices
+Memory: 735/752 751/765
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+           Current Progress:   4 % - Assembling matrices
+Memory: 708/752 722/765
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+           Current Progress:   9 % - Matrix factorization
+Memory: 713/752 726/765
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+-          Current Progress:  19 % - Assembling matrices
+Memory: 714/752 728/765
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+--         Current Progress:  25 % - 
+Memory: 685/752 704/765
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+Solution time: 2 s.
+Physical memory: 746 MB
+Virtual memory: 760 MB
+Ended at Jun 4, 2026, 8:51:37 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 4, 2026, 8:51:38 PM.
+Geometry shape function: Linear Lagrange
+Parameter v_in = 1.0E-7 (m/s).
+--         Current Progress:  26 % - Compile Equations: Time Dependent
+Memory: 706/752 712/765
+Time: 0 s.
+Physical memory: 711 MB
+Virtual memory: 717 MB
+Ended at Jun 4, 2026, 8:51:38 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 4, 2026, 8:51:38 PM.
+--         Current Progress:  26 % - Dependent Variables 1
+Memory: 721/752 726/765
+Solution time: 0 s.
+Physical memory: 721 MB
+Virtual memory: 726 MB
+Ended at Jun 4, 2026, 8:51:38 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 4, 2026, 8:51:38 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 7616 (plus 48275 internal DOFs).
+Nonsymmetric matrix found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+--         Current Progress:  26 % - Assembling matrices
+Memory: 770/773 781/783
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+--         Current Progress:  27 % - Assembling matrices
+Memory: 775/787 785/797
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+--         Current Progress:  29 % - Assembling matrices
+Memory: 774/787 784/798
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+---        Current Progress:  34 % - Matrix factorization
+Memory: 779/792 789/802
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+----       Current Progress:  44 % - Assembling matrices
+Memory: 787/793 797/804
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+-----      Current Progress:  50 % - Assembling matrices
+Memory: 787/794 797/805
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+-----      Current Progress:  50 % - 
+Memory: 711/794 715/805
+Solution time: 2 s.
+Physical memory: 787 MB
+Virtual memory: 797 MB
+Ended at Jun 4, 2026, 8:51:40 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 4, 2026, 8:51:40 PM.
+Geometry shape function: Linear Lagrange
+Parameter v_in = 5.0E-7 (m/s).
+-----      Current Progress:  51 % - Compile Equations: Time Dependent
+Memory: 756/794 761/805
+-----      Current Progress:  51 % - Creating visualization mesh
+Memory: 758/794 762/805
+Time: 1 s.
+Physical memory: 1.09 GB
+Virtual memory: 1.1 GB
+Ended at Jun 4, 2026, 8:51:40 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 4, 2026, 8:51:40 PM.
+-----      Current Progress:  51 % - Dependent Variables 1
+Memory: 1098/1101 1107/1110
+Solution time: 0 s.
+Physical memory: 1.1 GB
+Virtual memory: 1.11 GB
+Ended at Jun 4, 2026, 8:51:40 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 4, 2026, 8:51:40 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 7616 (plus 48275 internal DOFs).
+Nonsymmetric matrix found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+-----      Current Progress:  51 % - Assembling matrices
+Memory: 1188/1193 1201/1206
+   0           0           - out    2    3    2                  0        0        0
+   1       6.012           6        3    4    3     1     0      0        0        0
+-----      Current Progress:  51 % - Constraint handling
+Memory: 1198/1200 1211/1214
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+-----      Current Progress:  52 % - Assembling matrices
+Memory: 1201/1201 1214/1214
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+   7      384.01         192        9   10    9     1     0      0        0        0
+-----      Current Progress:  53 % - Solving linear system
+Memory: 1194/1203 1207/1216
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+   9        1368         600       11   12   11     1     0      0        0        0
+-----      Current Progress:  57 % - Assembling matrices
+Memory: 845/1203 868/1216
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+  12        3168         600       14   15   14     1     0      0        0        0
+------     Current Progress:  64 % - Assembling matrices
+Memory: 846/1203 868/1216
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+  15        4968         600       17   18   17     1     0      0        0        0
+-------    Current Progress:  71 % - Assembling matrices
+Memory: 848/1203 869/1216
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+-------    Current Progress:  75 % - 
+Memory: 752/1203 758/1216
+Solution time: 2 s.
+Physical memory: 1.2 GB
+Virtual memory: 1.21 GB
+Ended at Jun 4, 2026, 8:51:43 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+<---- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) -----------
+Started at Jun 4, 2026, 8:51:43 PM.
+Geometry shape function: Linear Lagrange
+Parameter v_in = 1.0E-6 (m/s).
+-------    Current Progress:  76 % - Compile Equations: Time Dependent
+Memory: 780/1203 805/1216
+-------    Current Progress:  76 % - Creating visualization mesh
+Memory: 796/1203 819/1216
+Time: 1 s.
+Physical memory: 1.07 GB
+Virtual memory: 1.09 GB
+Ended at Jun 4, 2026, 8:51:43 PM.
+----- Compile Equations: Time Dependent in Study 1/Solution 1 (sol1) ---------->
+<---- Dependent Variables 1 in Study 1/Solution 1 (sol1) -----------------------
+Started at Jun 4, 2026, 8:51:43 PM.
+-------    Current Progress:  76 % - Dependent Variables 1
+Memory: 1081/1203 1093/1216
+Solution time: 0 s.
+Physical memory: 1.08 GB
+Virtual memory: 1.09 GB
+Ended at Jun 4, 2026, 8:51:43 PM.
+----- Dependent Variables 1 in Study 1/Solution 1 (sol1) ---------------------->
+<---- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) ---------------------
+Started at Jun 4, 2026, 8:51:43 PM.
+Time-dependent solver (BDF)
+Number of degrees of freedom solved for: 7616 (plus 48275 internal DOFs).
+Nonsymmetric matrix found.
+Scales for dependent variables:
+Concentration (comp1.c): 1
+Step        Time    Stepsize      Res  Jac  Sol Order Tfail NLfail   LinErr   LinRes
+-------    Current Progress:  76 % - Assembling sparsity pattern
+Memory: 1189/1203 1203/1216
+   0           0           - out    2    3    2                  0        0        0
+-------    Current Progress:  76 % - Assembling matrices
+Memory: 1110/1203 1124/1216
+   1       6.012           6        3    4    3     1     0      0        0        0
+   2      12.012           6        4    5    4     1     0      0        0        0
+   3      24.012          12        5    6    5     2     0      0        0        0
+   4      48.012          24        6    7    6     1     0      0        0        0
+   5      96.012          48        7    8    7     1     0      0        0        0
+   -         100           - out
+   6      192.01          96        8    9    8     1     0      0        0        0
+-------    Current Progress:  77 % - Assembling matrices
+Memory: 854/1203 866/1216
+   7      384.01         192        9   10    9     1     0      0        0        0
+   -         500           - out
+   8      768.01         384       10   11   10     1     0      0        0        0
+   -        1000           - out
+--------   Current Progress:  82 % - Assembling matrices
+Memory: 852/1203 865/1216
+   9        1368         600       11   12   11     1     0      0        0        0
+  10        1968         600       12   13   12     1     0      0        0        0
+   -        2000           - out
+  11        2568         600       13   14   13     1     0      0        0        0
+--------   Current Progress:  86 % - Matrix factorization
+Memory: 855/1203 867/1216
+  12        3168         600       14   15   14     1     0      0        0        0
+  13        3768         600       15   16   15     1     0      0        0        0
+   -        4000           - out
+  14        4368         600       16   17   16     1     0      0        0        0
+---------  Current Progress:  93 % - 
+Memory: 856/1203 868/1216
+  15        4968         600       17   18   17     1     0      0        0        0
+  16        5568         600       18   19   18     1     0      0        0        0
+   -        6000           - out
+  17        6168         600       19   20   19     1     0      0        0        0
+Time-stepping completed.
+---------- Current Progress: 100 % - 
+Memory: 767/1203 772/1216
+Solution time: 2 s.
+Physical memory: 1.19 GB
+Virtual memory: 1.2 GB
+Ended at Jun 4, 2026, 8:51:45 PM.
+----- Time-Dependent Solver 1 in Study 1/Solution 1 (sol1) -------------------->
+---------- Current Progress: 100 % - Creating visualization mesh
+Memory: 790/1203 797/1216
+Class run time: 16 s.
+Saving model: C:\Users\user\Desktop\CMPE492-Project\comsol\models\M2_3D_transport\M2B_anatomical_flow_lymphnode_v01_Model.mph
+Save time: 1 s.
+Total time: 17 s.
+---------- Current Progress: 100 % - Done
+Memory: 895/1203 904/1216

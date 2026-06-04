@@ -1,3 +1,6 @@
 ﻿"model","r","v_in_m_s","time_to_50pct_s","sensor_surface_c_1000s_pM","sensor_surface_c_6000s_pM","source"
-"M2_diffusion_baseline","0.5","0","5337.23329031158","1.12047281441867","4.97937718000608","Preserved M2 diffusion-only baseline"
-"M2B_prescribed_flow","0.5","5E-07","1732.86795139986","3.16492755805786","8.72910764842164","M2B partially anatomical prescribed-velocity extension"
+"M2_diffusion_baseline","0.5","0","6037.71598249567","1.12047281441867","4.97937718000608","Preserved M2 diffusion-only baseline"
+"M2B_convection_diffusion","0.5","0","6037.71598249567","1.12047281441867","4.97937718000608","M2B zero-flow case approximating M2 diffusion baseline"
+"M2B_convection_diffusion","0.5","1E-07","3514.85023877517","1.81304996550974","6.8656874049988","M2B partially anatomical convection-diffusion extension"
+"M2B_convection_diffusion","0.5","5E-07","1839.26698744685","3.16492755805786","8.72910764842164","M2B partially anatomical convection-diffusion extension"
+"M2B_convection_diffusion","0.5","1E-06","1466.14019476784","3.78776775447973","9.12717373621639","M2B partially anatomical convection-diffusion extension"

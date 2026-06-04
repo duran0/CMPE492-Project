@@ -66,19 +66,23 @@
 
 - Date: 2026-06-03
 - COMSOL file: `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph`
-- Solver/build log: `comsol/models/M2_3D_transport/solver_logs/M2B_anatomical_flow_lymphnode_v01_build.txt`
-- Physics: prescribed-velocity convection-diffusion extension for HER2 transport.
+- Solver log: `comsol/models/M2_3D_transport/solver_logs/M2B_anatomical_flow_lymphnode_v01_solve.txt`
+- Physics: Transport of Diluted Species with coupled user-defined convection velocity `u_flow`, `v_flow`, and `w_flow`.
 - Geometry version: partially anatomical lymph-node-inspired scaffold with subcapsular sinus, cortex, medulla, four afferent inlet markers, one efferent outlet marker, capsule no-flow marker, and local/full sensor markers.
 - Parameters:
-  - `v_in = 1e-7, 5e-7, 1e-6 m/s`
+  - `v_in = 0, 1e-7, 5e-7, 1e-6 m/s`
   - `r = 0.1, 0.25, 0.5, 0.75, 1.0`
   - `C = 0.5, 1, 10, 100, 1000 pM`
   - `t = 0, 100, 500, 1000, 2000, 4000, 6000 s`
-- Status: completed as an extension while preserving the M2 diffusion-only baseline.
+- Solver:
+  - Type: time dependent BDF with parametric velocity sweep.
+  - Degrees of freedom: 7616 plus 48275 internal DOFs for each velocity case.
+  - Completed cases: `v_in = 0, 1e-7, 5e-7, 1e-6 m/s`.
+- Status: completed as a coupled convection-diffusion extension while preserving the M2 diffusion-only baseline.
 - Exported CSV: `results/raw_csv/M2B_flow_velocity_summary.csv`, `results/raw_csv/M2B_flow_avg_concentration_cortex.csv`, `results/raw_csv/M2B_flow_avg_concentration_medulla.csv`, `results/raw_csv/M2B_flow_sensor_surface_concentration.csv`, `results/raw_csv/M2B_flow_flux_integral_sensor.csv`.
-- Exported processed CSV: `results/processed_csv/M2B_flow_vs_diffusion_sensor_exposure.csv`, `results/processed_csv/M2B_flow_delay_vs_diffusivity_ratio.csv`, `results/processed_csv/M2B_flow_pressure_or_velocity_sweep.csv`, `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv`, `results/processed_csv/M2B_mesh_sensitivity.csv`.
+- Exported processed CSV: `results/processed_csv/M2B_flow_vs_diffusion_sensor_exposure.csv`, `results/processed_csv/M2B_flow_delay_vs_diffusivity_ratio.csv`, `results/processed_csv/M2B_flow_pressure_or_velocity_sweep.csv`, `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv`, `results/processed_csv/M2B_velocity_sweep_summary.csv`, `results/processed_csv/M2B_mesh_sensitivity.csv`.
 - Exported figures: `results/plots/M2B_flow_velocity_streamlines.png`, `results/plots/M2B_flow_pressure_field.png`, `results/plots/M2B_flow_concentration_slice_t1000s.png`, `results/plots/M2B_flow_concentration_slice_t6000s.png`, `results/plots/M2B_flow_sensor_concentration_vs_time.png`, `results/plots/M2B_flow_vs_diffusion_sensor_exposure.png`, `results/plots/M2B_flow_delay_vs_diffusivity_ratio.png`, `results/plots/M2B_flow_vs_M2_diffusion_comparison.png`.
-- Notes: this is not a full anatomical or clinically validated lymph-node simulation. It documents prescribed-flow effects as a controlled extension relative to M2 diffusion.
+- Notes: the `v_in = 0` case matches the diffusion-like sensor concentration values, while increasing `v_in` increases sensor exposure. This is not a full anatomical, Darcy-flow, or clinically validated lymph-node simulation.
 
 ## Run ID: M3_surface_binding_from_M2_v01
 

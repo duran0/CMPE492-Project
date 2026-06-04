@@ -52,15 +52,16 @@ Current model configuration:
 - Geometry: simplified lymph-node-inspired sphere with subcapsular sinus, cortex, and medulla reference regions.
 - Boundary markers: four afferent inlet markers, one efferent outlet marker, capsule no-flow marker, local sensor marker, and full sensor marker.
 - Named selections: `domain_subcapsular_sinus`, `domain_cortex`, `domain_medulla`, `boundary_afferent_inlet_1` through `boundary_afferent_inlet_4`, `boundary_efferent_outlet`, `boundary_capsule_no_flow`, `boundary_sensor_local`, and `boundary_sensor_full`.
-- Transport assumption: prescribed-velocity convection-diffusion extension rather than a fully solved Darcy-flow model.
-- Velocity sweep: `v_in = 1e-7, 5e-7, 1e-6 m/s`.
+- Transport assumption: Transport of Diluted Species with user-defined convection velocity set to `u = u_flow`, `v = v_flow`, and `w = w_flow`.
+- Boundary condition: HER2 concentration is applied only on the four afferent inlet selections. The efferent outlet uses a separate outflow selection. Capsule/no-flow boundaries are not used as HER2 source boundaries.
+- Velocity sweep: `v_in = 0, 1e-7, 5e-7, 1e-6 m/s`.
 - Diffusivity sweep: `r = Dmedulla/Dcortex = 0.1, 0.25, 0.5, 0.75, 1.0`.
 - Time points: `0, 100, 500, 1000, 2000, 4000, 6000 s`.
 
 Batch evidence:
 
 - `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph`
-- `comsol/models/M2_3D_transport/solver_logs/M2B_anatomical_flow_lymphnode_v01_build.txt`
+- `comsol/models/M2_3D_transport/solver_logs/M2B_anatomical_flow_lymphnode_v01_solve.txt`
 
 Exported M2B tables:
 
@@ -73,9 +74,10 @@ Exported M2B tables:
 - `results/processed_csv/M2B_flow_delay_vs_diffusivity_ratio.csv`
 - `results/processed_csv/M2B_flow_pressure_or_velocity_sweep.csv`
 - `results/processed_csv/M2B_flow_vs_M2_diffusion_comparison.csv`
+- `results/processed_csv/M2B_velocity_sweep_summary.csv`
 - `results/processed_csv/M2B_mesh_sensitivity.csv`
 
-The M2B outputs support a limited comparison claim: prescribed flow increases sensor exposure and reduces arrival delay relative to the diffusion-only M2 baseline under the selected assumptions. They do not claim a fully anatomically correct lymph-node model, a validated Darcy-flow solve, or clinical performance.
+The M2B outputs support a limited comparison claim: coupled prescribed convection increases sensor exposure and reduces arrival delay relative to the diffusion-only M2 baseline under the selected assumptions. The `v_in = 0` case matches the M2 diffusion-like sensor concentration trend. The model does not claim fully anatomically correct lymph-node geometry, a Darcy-flow pressure solve, or clinical performance.
 
 ## Stage M3: Surface Binding
 
