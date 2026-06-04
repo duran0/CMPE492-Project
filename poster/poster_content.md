@@ -6,6 +6,10 @@ In-body Antigen Detection via Antibodies on a Transistor: A Simulation Study of 
 
 HER2 is an important breast cancer biomarker, but continuous in-body monitoring is not established. This project asks whether a GFET biosensor concept could detect HER2 after antigen transport, antibody binding, and electrical transduction are all considered together.
 
+# Main Message Box
+
+Main finding: Directional flow and sensor placement improve HER2 exposure, but electrostatic screening and electronics noise dominate practical GFET detectability.
+
 # Method Pipeline
 
 ```text
@@ -21,16 +25,16 @@ HER2 concentration
 # COMSOL Transport and Flow Model
 
 - M2: diffusion-only Transport of Diluted Species baseline in simplified cortex/medulla geometry.
-- M2B: partially anatomical convection-diffusion extension with afferent inlet regions, hilum-side efferent outlet, local/full sensor regions, and prescribed lymph-flow velocity coupled to HER2 transport.
+- M2B: partially anatomical prescribed-velocity convection-diffusion extension with afferent inlet regions, hilum-side efferent outlet, local/full sensor regions, and prescribed lymph-flow velocity coupled to HER2 transport.
 - Verification: `v_in = 0` matches diffusion-like behavior; increasing `v_in` changes sensor exposure.
-- Limitation: M2B uses prescribed velocity, not a validated Darcy-flow pressure solution.
+- Limitation: M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
 
 # Key Result 1: Transport / Flow / Placement
 
 - Directional flow improves sensor exposure compared with diffusion-only transport.
 - At `C = 10 pM`, reference flow `v_in = 5e-7 m/s` gives `8.73 pM` sensor concentration at 6000 s versus `4.98 pM` for diffusion-only transport.
 - Time-to-50% exposure decreases from approximately `6038 s` to `1839 s`.
-- Sensor placement matters: subcapsular/cortical placement is fastest and strongest in the modeled placement sweep.
+- Sensor placement affects response timing and current response. In the modeled sweep, the subcapsular/cortical placement is fastest and strongest under the reference flow case. Under directional flow, late-time exposure becomes high across all tested placements, while placement still changes arrival time and pathway exposure.
 
 # Key Result 2: Current Response / LOD
 
@@ -53,8 +57,8 @@ The model predicts detectability only under specific physical and electronic ass
 # Limitations
 
 - Simulation-only; no wet-lab validation.
-- M2B is partially anatomical, not a complete lymph-node model.
-- Prescribed velocity is not a validated Darcy-flow solution.
+- M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
+- Direct COMSOL field-table export remains future work; the current quantitative tables are post-processed from the documented COMSOL-stage model and parameter sweeps.
 - GFET current response is analytical rather than a full graphene device simulation.
 - Debye screening parameters are feasibility assumptions, not measured implant conditions.
 

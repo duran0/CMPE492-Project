@@ -38,9 +38,9 @@ The meshed single-case solve reports 3103 degrees of freedom plus internal DOFs 
 
 The `M2_comsol_*` CSV files are COMSOL-stage post-processing outputs tied to the meshed TDS model, sweep parameters, and exported solver logs. Direct COMSOL field-table export from the solved `.mph` is not yet automated, so final report text should describe these files as COMSOL-stage post-processed transport metrics rather than raw COMSOL field probes.
 
-## Stage M2B: Partially Anatomical Flow Extension
+## Stage M2B: Partially Anatomical Prescribed-Velocity Flow Extension
 
-The flow extension is implemented separately from the preserved M2 diffusion-only baseline:
+The flow extension is implemented separately from the preserved M2 diffusion-only baseline. M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
 
 ```text
 comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.java
@@ -77,7 +77,7 @@ Exported M2B tables:
 - `results/processed_csv/M2B_velocity_sweep_summary.csv`
 - `results/processed_csv/M2B_mesh_sensitivity.csv`
 
-The M2B outputs support a limited comparison claim: coupled prescribed convection increases sensor exposure and reduces arrival delay relative to the diffusion-only M2 baseline under the selected assumptions. The `v_in = 0` case matches the M2 diffusion-like sensor concentration trend. The model does not claim fully anatomically correct lymph-node geometry, a Darcy-flow pressure solve, or clinical performance.
+The M2B outputs support a limited comparison claim: coupled prescribed convection increases sensor exposure and reduces arrival delay relative to the diffusion-only M2 baseline under the selected assumptions. The `v_in = 0` case matches the M2 diffusion-like sensor concentration trend. Direct COMSOL field-table export remains future work; the current quantitative tables are post-processed from the documented COMSOL-stage model and parameter sweeps. The model does not claim fully anatomically correct lymph-node geometry, a Darcy-flow pressure solve, or clinical performance.
 
 ## Stage M3: Surface Binding
 

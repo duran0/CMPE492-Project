@@ -7,7 +7,7 @@
 | M1 0D binding | `comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.mph` | Pass | COMSOL batch build completed. |
 | M2 3D transport | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph` | Pass with limitation | Meshed TDS solve completed; direct field-table export is not yet automated. |
 | M2 diffusivity sweep | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_sweep_r_*.mph` | Pass with limitation | Batch sweep completed for all five `r` values; CSV metrics are post-processed transport metrics. |
-| M2B anatomical flow | `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph` | Pass with limitation | Separate convection-diffusion extension built and solved without overwriting M2 diffusion. |
+| M2B anatomical flow | `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph` | Pass with limitation | Separate prescribed-velocity convection-diffusion extension built and solved without overwriting M2 diffusion. |
 | M3 full boundary | `comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.mph` | Pass | Surface binding recomputed from M2 sensor concentration. |
 | M3 local sensor | `comsol/models/M3_surface_binding/M3_surface_binding_local_sensor_v01.mph` | Pass | Local GFET-scale binding output generated. |
 | M4 GFET response | `comsol/models/M4_gfet_response/M4_gfet_current_response_v01.mph` | Pass | Current response and LOD computed from M3 bound molecule count. |
@@ -117,8 +117,8 @@
 
 - Direct COMSOL table export from solved `.mph` field probes is not yet automated.
 - The M2 source boundary is implemented as the Java-selected source boundary set rather than a manually curated anatomical inlet/outlet pair.
-- M2B uses prescribed velocity rather than a Darcy-flow pressure solve; it is not a full anatomical lymph-node model.
-- M2B tabular metrics remain post-processed from the documented velocity-sweep equations because direct COMSOL field-table export is not automated.
+- M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
+- Direct COMSOL field-table export remains future work; the current quantitative tables are post-processed from the documented COMSOL-stage model and parameter sweeps.
 - M3 binding is analytically recomputed from M2 sensor concentration rather than solved as a fully coupled surface-reaction PDE.
 - GFET response is analytical and does not claim full graphene semiconductor validation.
 - Debye screening is documented as a limitation rather than solved explicitly.
@@ -127,4 +127,4 @@
 
 Accepted with documented limitations.
 
-The repository is suitable for final report drafting if the report states that M2 contains a meshed COMSOL TDS solve and sweep evidence, M2B is a prescribed-velocity convection-diffusion extension, and tabular M2/M2B metrics are COMSOL-stage post-processed outputs rather than raw COMSOL field-table exports.
+The repository is suitable for final report drafting if the report states that M2 contains a meshed COMSOL TDS solve and sweep evidence, M2B is a partially anatomical prescribed-velocity convection-diffusion extension rather than a full anatomical lymph-node model or validated Darcy-flow pressure solution, and tabular M2/M2B metrics are COMSOL-stage post-processed outputs rather than raw COMSOL field-table exports.
