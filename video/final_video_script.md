@@ -26,11 +26,11 @@ First, directional flow improves HER2 exposure at the sensor compared with diffu
 
 Second, placement matters. A sensor closer to favorable transport paths responds faster and more strongly in the modeled sweep.
 
-Third, electrical detectability is conditional. In the detectability envelope, 99 parameter combinations are detectable, but 36 fail. Detection is favored by higher HER2 concentration, stronger coupling, lower noise, and tighter binding affinity. Weak coupling, high noise, or poor affinity can make the signal fall below threshold.
+Third, electrical detectability is conditional. In the detectability envelope, 99 parameter combinations are detectable, but 36 fail. The best reported M4 LOD case is approximately 0.78 pM under the alpha = 0.03 and 10 pA noise assumption. Detection is favored by higher HER2 concentration, stronger coupling, lower noise, and tighter binding affinity. Weak coupling, high noise, or poor affinity can make the signal fall below threshold.
 
 Fourth, Debye screening is the strongest feasibility barrier. With PBS-like physiological screening and effective charge distance of at least 5 nanometers, zero out of 60 screened cases remain detectable. That is the main negative result.
 
-The main scientific conclusion is that HER2 transport alone does not determine GFET biosensor feasibility. Even when antigen reaches the sensor, electrical detectability depends strongly on coupling efficiency, noise floor, and electrostatic screening.
+The main scientific conclusion is: Directional flow and sensor placement improve HER2 exposure, but electrostatic screening and electronics noise dominate practical GFET detectability.
 
 # 4:20-5:00 Limitations and Future Work
 

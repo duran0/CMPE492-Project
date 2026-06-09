@@ -41,6 +41,7 @@ HER2 concentration
 - GFET current response increases with HER2 concentration, coupling efficiency, and bound molecule count.
 - Detectability is not universal.
 - Experiment C found `99` detectable parameter rows and `36` failing rows across concentration, coupling, noise, and `Kd` sweeps.
+- The best reported M4 LOD case is approximately `0.78 pM` under the `alpha = 0.03` and `10 pA` noise assumption.
 - Sub-pM or low-pM detectability is predicted only under favorable coupling, low noise, and binding assumptions.
 
 # Key Result 3: Debye Screening Feasibility
@@ -52,7 +53,7 @@ HER2 concentration
 
 # Main Conclusion
 
-The model predicts detectability only under specific physical and electronic assumptions. Transport and placement influence antigen exposure, but electrostatic screening and noise are likely the main feasibility barriers.
+Directional flow and sensor placement improve HER2 exposure, but electrostatic screening and electronics noise dominate practical GFET detectability.
 
 # Limitations
 

@@ -41,6 +41,14 @@ HER2 concentration
 - Sensitivity and LOD analysis targeting simulated LOD `<= 1 pM`.
 - Final CMPE 492 report, poster, short video, and repository documentation.
 
+## Final Deliverables
+
+- Final report: `report/final_report.pdf`
+- Poster: `poster/final_poster.pdf`
+- Video script/storyboard: `video/final_video_script.md`
+- Simulation results: `results/processed_csv/`
+- Verification report: `docs/verification_report.md`
+
 ## Current Simulation Status
 
 - M1 binding kinetics: complete, with CSV outputs and occupancy plots.
