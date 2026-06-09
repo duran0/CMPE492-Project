@@ -13,6 +13,14 @@ pdflatex -interaction=nonstopmode -halt-on-error final_report.tex
 
 The report is intentionally one-sided and single-column for final submission readability.
 
+## Figure Refresh Command
+
+Run from the repository root before compiling if the final report figures need to be refreshed from the verified CSV outputs:
+
+```powershell
+py scripts\polish_final_report_figures.py
+```
+
 ## Known Limitations Stated in the Report
 
 - Simulation-only scope: no wet-lab validation, fabricated GFET, clinical validation, or biocompatibility test.
@@ -36,5 +44,11 @@ The report is intentionally one-sided and single-column for final submission rea
 - `EXP_D_detectability_map_screened.png`
 - `EXP_E_detectability_requirement_map.png`
 - `EXP_E_max_allowed_distance_vs_ionic_strength.png`
+
+## Included Report Tables
+
+- `tables/final_design_requirements_table.tex`
+- `tables/final_claims_table.tex`
+- `tables/final_summary_table.tex`
 
 No required report figure is currently missing.

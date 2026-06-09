@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{Compact final summary of the simulation results and interpretation.}
+\label{tab:compact_final_summary}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.34\textwidth}p{0.31\textwidth}@{}}
+\toprule
+\textbf{Question} & \textbf{Result} & \textbf{Interpretation}\\
+\midrule
+What was calculated? & A staged chain from HER2 transport to sensor concentration, occupancy, bound molecule count, GFET current, noise/screening, and design requirements. & The project is a simulation-based feasibility study, not a fabricated or clinically validated detector.\\
+Does flow change sensor exposure? & At 10 pM, the $v_{in}=5\times10^{-7}$ m/s case gives 8.73 pM at 6000 s versus 4.98 pM for diffusion-only transport. & Directional prescribed flow improves exposure and reduces the time-to-50\% exposure under the modeled assumptions.\\
+Does sensor placement matter? & Subcapsular/cortical placement is fastest and strongest under reference flow; late-time flow exposure remains high across all three tested placements. & Placement affects response timing and pathway exposure, but flow reduces the late-time current spread compared with diffusion-only transport.\\
+When is current detectable? & Experiment C gives 99 detectable and 36 failing rows across concentration, coupling, noise, and $K_d$ cases. & Detectability is conditional and depends on coupling, noise, affinity, and concentration; it is not universal sub-pM detection.\\
+What is the main negative result? & PBS-like $\lambda_D=0.8$ nm screening with $d\geq5$ nm gives 0 of 60 detectable screened cases. & Electrostatic screening and receptor-channel distance can dominate the feasibility limit even when transport exposure improves.\\
+What would need to improve? & Experiment E points to short effective receptor distance, strong transduction, low noise, favorable binding, and screening mitigation. & Future work should focus on surface chemistry, electronic noise, validated flow physics, and device characterization.\\
+\bottomrule
+\end{tabular}
+\end{table}
