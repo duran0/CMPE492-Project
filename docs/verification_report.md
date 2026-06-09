@@ -59,6 +59,8 @@
 - [x] M4 `DeltaIds` increases with bound molecule count.
 - [x] M4 `DeltaIds` increases with coupling efficiency.
 - [x] M4 `Nmin` increases with current noise floor.
+- [x] Experiment E uses the M2B reference exposure approximation, M3 Langmuir binding, M4 GFET response, and Debye attenuation to compute design requirements.
+- [x] Experiment E uses `alpha_eff = alpha0 exp(-d/lambda_D)` and applies the `3 * noise_floor` detectability threshold.
 
 ## Mesh Sensitivity Verification
 
@@ -84,6 +86,10 @@
 - [x] Mesh sensitivity was checked for the reference `v_in = 5e-7 m/s` case.
 - [x] Higher coupling efficiency gives larger `DeltaIds`.
 - [x] Higher noise floor gives larger minimum detectable molecule count.
+- [x] Experiment E required coupling increases as receptor-channel distance increases.
+- [x] Experiment E required coupling increases as Debye length decreases.
+- [x] Experiment E maximum allowed noise floor decreases under PBS-like or long-distance screening.
+- [x] Experiment E shows screening is the dominant feasibility barrier in the tested design space.
 
 ## Export Verification
 
@@ -108,6 +114,11 @@
 - [x] `results/processed_csv/EXP_B_sensor_placement_summary.csv` exists.
 - [x] `results/processed_csv/EXP_C_detectability_envelope.csv` exists.
 - [x] `results/processed_csv/EXP_D_debye_screening_feasibility.csv` exists.
+- [x] `results/processed_csv/EXP_E_feasibility_requirement_map.csv` exists.
+- [x] `results/processed_csv/EXP_E_required_alpha_summary.csv` exists.
+- [x] `results/processed_csv/EXP_E_max_distance_summary.csv` exists.
+- [x] `results/processed_csv/EXP_E_noise_requirement_summary.csv` exists.
+- [x] `results/processed_csv/EXP_E_design_requirements_summary.csv` exists.
 - [x] `results/processed_csv/final_scientific_conclusions.csv` exists.
 - [x] `results/processed_csv/M4_lod_summary.csv` exists.
 - [x] Report-ready figures exist in `results/figures_for_report`.
@@ -122,6 +133,7 @@
 - M3 binding is analytically recomputed from M2 sensor concentration rather than solved as a fully coupled surface-reaction PDE.
 - GFET response is analytical and does not claim full graphene semiconductor validation.
 - Debye screening is documented as a limitation rather than solved explicitly.
+- Experiment E is a simulation-based design requirement analysis and does not claim experimental validation or fabricated-device performance.
 
 ## Final Verdict
 

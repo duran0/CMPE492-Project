@@ -90,6 +90,15 @@ HER2 is an important breast cancer biomarker, but continuous in-body monitoring 
 
 \includegraphics[width=\linewidth]{../results/figures_for_poster/EXP_D_lod_vs_ionic_strength.png}
 
+\section{Result 4: Design Requirements}
+\begin{itemize}
+  \item Feasibility requires shorter receptor-channel distance, stronger coupling, lower current noise, or reduced ionic screening.
+  \item At \(K_d=10\) pM and 10 pA noise under PBS-like screening at \(d=1\) nm, required \(\alpha_0\) is about 0.0326 at 1 pM HER2 and 0.00561 at 10 pM HER2.
+  \item Experiment E turns the Debye-screening limitation into quantitative requirements.
+\end{itemize}
+
+\includegraphics[width=\linewidth]{../results/figures_for_poster/EXP_E_detectability_requirement_map.png}
+
 \section{Limitations}
 \begin{itemize}
   \item Simulation-only; no wet-lab or clinical validation.
@@ -100,10 +109,10 @@ HER2 is an important breast cancer biomarker, but continuous in-body monitoring 
 
 \section{Future Work}
 \begin{itemize}
-  \item Validate porous or Darcy-flow model experimentally/computationally.
-  \item Automate direct COMSOL field-table export.
-  \item Reduce receptor-to-channel distance.
-  \item Evaluate low-noise electronics and screening mitigation.
+  \item Experimentally validate these design requirements.
+  \item Replace prescribed flow with validated Darcy/Brinkman flow.
+  \item Automate direct COMSOL field exports.
+  \item Test surface chemistries/electronics that can achieve the required distance, coupling, and noise values.
 \end{itemize}
 
 \end{multicols}

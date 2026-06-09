@@ -51,6 +51,12 @@ HER2 concentration
 - PBS-like physiological salt with `lambda_D = 0.8 nm` and `d >= 5 nm` produced `0/60` detectable screened cases.
 - This is the main negative feasibility result.
 
+# Key Result 4: Design Requirement Map
+
+- The feasibility analysis shows what must improve for detection: shorter receptor-channel distance, stronger coupling, lower current noise, or reduced local ionic screening.
+- This turns the negative Debye-screening result into quantitative design requirements.
+- For `Kd = 10 pM`, `10 pA` noise, and PBS-like screening at `d = 1 nm`, required `alpha0` is approximately `0.0326` at `1 pM` HER2 and `0.00561` at `10 pM` HER2.
+
 # Main Conclusion
 
 Directional flow and sensor placement improve HER2 exposure, but electrostatic screening and electronics noise dominate practical GFET detectability.
@@ -65,8 +71,9 @@ Directional flow and sensor placement improve HER2 exposure, but electrostatic s
 
 # Future Work
 
-- Replace prescribed flow with validated porous/Darcy flow.
-- Add direct COMSOL field-table export and probe automation.
-- Model receptor linker length and charge location more explicitly.
-- Explore surface chemistries that reduce effective charge distance.
-- Evaluate low-noise electronics and local screening mitigation strategies.
+Future work should experimentally validate these design requirements, replace prescribed flow with validated Darcy/Brinkman flow, automate direct COMSOL field exports, and test surface chemistries/electronics that can achieve the required distance, coupling, and noise values.
+
+- Experimentally validate these design requirements.
+- Replace prescribed flow with validated Darcy/Brinkman flow.
+- Automate direct COMSOL field exports.
+- Test surface chemistries/electronics that can achieve the required distance, coupling, and noise values.

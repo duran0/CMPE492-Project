@@ -20,7 +20,7 @@ The placement sweep checks whether the sensor position matters. Three placements
 
 # 3:15-4:20 Results and Scientific Conclusion
 
-The final experiment campaign has four main results.
+The final experiment campaign has five main results.
 
 First, directional flow improves HER2 exposure at the sensor compared with diffusion-only transport.
 
@@ -30,10 +30,12 @@ Third, electrical detectability is conditional. In the detectability envelope, 9
 
 Fourth, Debye screening is the strongest feasibility barrier. With PBS-like physiological screening and effective charge distance of at least 5 nanometers, zero out of 60 screened cases remain detectable. That is the main negative result.
 
+Fifth, Experiment E converts that negative screening result into design requirements. For example, with Kd = 10 pM, 10 pA noise, and PBS-like screening at 1 nanometer, required alpha0 is about 0.0326 at 1 pM HER2 and about 0.00561 at 10 pM HER2.
+
 The main scientific conclusion is: Directional flow and sensor placement improve HER2 exposure, but electrostatic screening and electronics noise dominate practical GFET detectability.
 
 # 4:20-5:00 Limitations and Future Work
 
 This project is simulation-only. It does not prove clinical feasibility, it does not build an in-body detector, and it does not show sub-pM detection in all cases. The flow model is partially anatomical and uses a prescribed velocity field rather than a validated Darcy-flow pressure solution. The GFET response is analytical, and Debye lengths are feasibility assumptions.
 
-Future work should improve the flow model, automate direct COMSOL field exports, model receptor distance and charge location more explicitly, and explore low-noise electronics or local screening mitigation. Based on this model, feasibility would likely require short receptor distance, strong transduction, low noise, and control of electrostatic screening.
+Experiment E moves part of that future work into the project by calculating design requirements for receptor distance, coupling efficiency, Debye screening, and electronics noise. Future work should experimentally validate these design requirements, replace prescribed flow with validated Darcy/Brinkman flow, automate direct COMSOL field exports, and test surface chemistries/electronics that can achieve the required distance, coupling, and noise values.

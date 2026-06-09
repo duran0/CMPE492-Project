@@ -119,3 +119,19 @@
 - Exported CSV: `results/processed_csv/EXP_A_flow_vs_diffusion_summary.csv`, `results/processed_csv/EXP_B_sensor_placement_summary.csv`, `results/processed_csv/EXP_C_detectability_envelope.csv`, `results/processed_csv/EXP_D_debye_screening_feasibility.csv`, `results/processed_csv/final_scientific_conclusions.csv`.
 - Exported figures: `results/plots/EXP_A_flow_vs_diffusion_sensor_exposure.png`, `results/plots/EXP_B_sensor_placement_exposure.png`, `results/plots/EXP_B_sensor_placement_deltaIds.png`, `results/plots/EXP_C_deltaIds_vs_concentration.png`, `results/plots/EXP_C_lod_heatmap_alpha_noise.png`, `results/plots/EXP_C_detectable_region_map.png`, `results/plots/EXP_D_alpha_eff_vs_distance.png`, `results/plots/EXP_D_lod_vs_ionic_strength.png`, `results/plots/EXP_D_detectability_map_screened.png`.
 - Notes: flow and placement can improve antigen exposure, but detectability still fails under weak coupling, high noise, poor affinity, or PBS-like Debye screening at longer effective charge distances.
+
+## Run ID: EXP_E_feasibility_requirement_map
+
+- Date: 2026-06-09
+- Script: `scripts/experiment_e_feasibility_requirements.py`
+- Input model assumptions: M2B reference sensor exposure, M3 Langmuir local-sensor binding, M4 analytical GFET current response, and Debye attenuation `alpha_eff = alpha0 exp(-d/lambda_D)`.
+- Parameters:
+  - `C = 0.5, 1, 10, 100, 1000 pM`
+  - `Kd = 1, 10, 100 pM`
+  - `alpha0 = 0.01, 0.03, 0.1`
+  - noise floor `= 1, 5, 10, 50, 100 pA`
+  - `lambda_D = 0.8, 3.0, 9.6 nm`
+  - effective charge distance `d = 0.5, 1, 2, 5, 10 nm`
+- Exported CSV: `results/processed_csv/EXP_E_feasibility_requirement_map.csv`, `results/processed_csv/EXP_E_required_alpha_summary.csv`, `results/processed_csv/EXP_E_max_distance_summary.csv`, `results/processed_csv/EXP_E_noise_requirement_summary.csv`, `results/processed_csv/EXP_E_design_requirements_summary.csv`.
+- Exported figures: `results/plots/EXP_E_detectability_requirement_map.png`, `results/plots/EXP_E_required_alpha_vs_distance.png`, `results/plots/EXP_E_max_allowed_distance_vs_ionic_strength.png`, `results/plots/EXP_E_noise_floor_requirement.png`.
+- Notes: Experiment E converts the Debye-screening limitation into explicit design requirements. It remains a simulation-based requirement analysis, not experimental validation or fabricated device performance.
