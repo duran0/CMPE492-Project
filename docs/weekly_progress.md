@@ -11,5 +11,5 @@ Use this page to keep a lightweight record of modeling progress and final delive
 | 5 | GFET current response | Delta I_DS curves | Done |
 | 6 | Parametric sweeps | Concentration-response tables | Done |
 | 7 | Sensitivity and LOD | LOD plot and table | Done |
-| 8 | Report, poster, video | Final submission package | In Progress |
+| 8 | Report, poster, video | Final submission package | Done |
 | 9 | Partially anatomical transport extension | M2B COMSOL file, flow CSVs, comparison plots | Done |

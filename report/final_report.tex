@@ -50,7 +50,8 @@
 \textbf{Student:} Duran Kaan Altin\\
 \textbf{Student ID:} 2020400108\\
 \textbf{Advisors:} Tuna Tugcu and Kutlu Ulgen\\
-\textbf{Date:} June 2026\\[1.4cm]
+\textbf{Date:} June 2026\\
+\textbf{Repository:} \url{https://github.com/duran0/CMPE492-Project}\\[1.4cm]
 \vfill
 \textit{Simulation-based feasibility study of HER2 transport, antibody binding, GFET current response, Debye screening, and design requirements.}
 \end{titlepage}
@@ -104,7 +105,7 @@ The final technical question is: under what transport, binding, coupling, noise,
 The proposed solution is a staged modeling workflow. HER2 is introduced as a diluted species in a lymph-node-inspired transport domain. The sensor is represented by an antibody-functionalized graphene surface. Local HER2 concentration is converted into surface occupancy and bound molecule count using Langmuir binding. The bound molecule count is then converted into $\Delta I_{DS}$ using an analytical GFET current-response estimate. Debye attenuation is applied to test whether receptor-channel distance and ionic strength suppress the electrical signal below threshold.
 
 \section{Scope of Final Work}
-The final repository contains five main model stages. M1 evaluates 0D HER2-antibody binding. M2 is a diffusion-only COMSOL transport baseline. M2B is a partially anatomical prescribed-velocity convection-diffusion extension. M3 converts local sensor concentration into surface occupancy and bound molecule count. M4 maps bound molecule count to GFET current response and LOD. Experiments A--E then compare flow and diffusion, evaluate sensor placement, map detectability, evaluate Debye screening, and derive design requirements.
+The final repository contains five main model stages. M1 evaluates 0D HER2-antibody binding. M2 is a diffusion-only COMSOL transport baseline. M2B is a partially anatomical prescribed-velocity convection-diffusion extension. M3 converts local sensor concentration into surface occupancy and bound molecule count. M4 maps bound molecule count to GFET current response and LOD. Experiments A to E then compare flow and diffusion, evaluate sensor placement, map detectability, evaluate Debye screening, and derive design requirements.
 
 Compared with the midterm stage, the final work adds the M2B prescribed-velocity flow extension, M3/M4 coupling from local sensor concentration to bound molecule count and GFET current, the Experiment C detectability envelope, the Experiment D Debye-screening feasibility test, and the Experiment E design-requirement maps. These additions convert the original diffusion-and-binding concept into a full simulation-based feasibility chain while keeping the claims limited to modeled behavior.
 
@@ -224,7 +225,7 @@ The LOD is estimated as
 LOD=\frac{3\sigma}{S},
 \label{eq:lod}
 \end{equation}
-where $\sigma$ is the assumed current noise floor and $S$ is the low-concentration sensitivity~\cite{Shrivastava2011}. The detection criterion is
+where $\sigma$ is the assumed current noise floor and $S$ is the low-concentration sensitivity~\cite{Shrivastava2011}. In the final LOD summaries, $S$ is fit over the low-concentration range $C=0.5$, 1, and 10 pM. The detection criterion is
 \begin{equation}
 \Delta I_{DS}\geq3\sigma.
 \label{eq:detectcriterion}
@@ -239,7 +240,7 @@ Electrolyte screening is modeled using the attenuation factor
 where $d$ is the effective receptor-channel charge distance and $\lambda_D$ is the Debye length~\cite{Stern2010Debye}. This is a Debye-screened feasibility model rather than a full electrostatic COMSOL solution.
 
 \section{Experiment E: Feasibility Requirement Map}
-Experiment E converts the Debye-screening limitation into engineering requirements. Combining Eqs.~\ref{eq:gfet}--\ref{eq:debye} with the detection threshold gives the required coupling condition
+Experiment E converts the Debye-screening limitation into engineering requirements. Combining Eqs.~\ref{eq:gfet}, \ref{eq:lod}, and \ref{eq:debye} with the detection threshold gives the required coupling condition
 \begin{equation}
 \alpha_{0,req}=\frac{3\sigma A_{eff}}{(W/L)e\mu V_{DS}N_{bound}}
 \exp\left(\frac{d}{\lambda_D}\right).
@@ -284,21 +285,23 @@ The M2 diffusion-only baseline preserves the midterm transport concept and adds 
 \reportfigure{M2_comsol_delay_vs_diffusivity_ratio.png}{M2 medulla uptake delay versus diffusivity ratio.}{fig:m2_delay}
 
 \section{Experiment A: Flow Versus Diffusion}
-Experiment A compares the M2 diffusion-only baseline with M2B directional-flow cases at $C=10$ pM. The reference flow case, $v_{in}=5\times10^{-7}$ m/s, gives approximately 8.73 pM sensor concentration at 6000 s. Diffusion-only transport gives approximately 4.98 pM at the same time. This is approximately a 1.75x increase in late-time sensor exposure. The time-to-50\% exposure decreases from about 6038 s to about 1839 s. This is the main positive transport result: directional lymph-node-inspired flow improves sensor exposure under the modeled assumptions.
+Experiment A compares the M2 diffusion-only baseline with M2B directional-flow cases at $C=10$ pM. This is a modeled comparison between two staged transport representations, not a perfectly matched controlled physics experiment. The cases are aligned by inlet concentration, reporting times, diffusivity ratio, and sensor-exposure metric, but M2B adds a prescribed velocity field and a partially anatomical scaffold. The comparison should therefore be read as directional sensitivity evidence rather than as an exact isolation of one physical variable.
+
+The reference M2B flow case, $v_{in}=5\times10^{-7}$ m/s, gives approximately 8.73 pM sensor concentration at 6000 s. The M2 diffusion-only baseline gives approximately 4.98 pM at the same time. This is approximately a 1.75x increase in late-time sensor exposure. The time-to-50\% exposure decreases from about 6038 s to about 1839 s. The result supports the conclusion that prescribed lymph-node-inspired flow can improve sensor exposure under the modeled assumptions.
 
 \reportfigure{EXP_A_flow_vs_diffusion_sensor_exposure.png}{Experiment A sensor exposure for the M2 diffusion baseline and M2B prescribed-flow cases at $v_{in}=1\times10^{-7}$, $5\times10^{-7}$, and $1\times10^{-6}$ m/s.}{fig:exp_a_flow}
 
 \section{Experiment B: Sensor Placement Sensitivity}
 Experiment B evaluates three placements: subcapsular/cortical, cortex-medulla transition, and medulla/hilum-side. Sensor placement affects timing and current response. In the modeled sweep, the subcapsular/cortical placement is fastest and strongest under the reference flow case. Under directional flow, late-time exposure becomes high across all tested placements, while placement still changes arrival time and pathway exposure. The placement sweep is post-processed over the transport model, not a full remeshed COMSOL relocation study.
 
-The current-response range across placements is approximately 559.9--600.5 pA under flow and 348.2--533.3 pA under diffusion-only transport. Therefore, the late-time current spread is smaller under flow than under diffusion-only transport, even though placement still affects response timing.
+The current-response range across placements is approximately 559.9 to 600.5 pA under flow and 348.2 to 533.3 pA under diffusion-only transport. Therefore, the late-time current spread is smaller under flow than under diffusion-only transport, even though placement still affects response timing.
 
 \reportfigure{EXP_B_sensor_placement_exposure.png}{Experiment B concentration exposure for subcapsular/cortical, cortex-medulla transition, and medulla/hilum-side placements under diffusion-only and directional-flow transport.}{fig:exp_b_exposure}
 
 \reportfigure{EXP_B_sensor_placement_deltaIds.png}{Experiment B grouped GFET current response at 6000 s comparing diffusion-only and directional-flow transport for the three sensor placements.}{fig:exp_b_current}
 
 \section{Surface Binding and GFET Current Response}
-Surface binding converts sensor concentration into bound molecule count. The local GFET-scale sensing area produces the count used for current response. The M4 current response increases with HER2 concentration and coupling efficiency. Under the current assumptions, the $\alpha=0.03$, 10 pA case reaches a simulated LOD of approximately 0.78 pM. This value is conditional and should not be generalized to all noise, coupling, or screening cases.
+Surface binding converts sensor concentration into bound molecule count using the documented $\Gamma_{max}$ and local sensor-area assumptions. The local GFET-scale sensing area produces the count used for current response. The M4 current response increases with HER2 concentration and coupling efficiency. Under the current assumptions, the $\alpha=0.03$, 10 pA case reaches a simulated LOD of approximately 0.78 pM using the 0.5 to 10 pM fit range. This value is conditional and should not be generalized to all noise, coupling, or screening cases.
 
 \reportfigure{M4_deltaIds_vs_concentration.png}{M4 analytical GFET current response versus HER2 concentration.}{fig:m4_current}
 
