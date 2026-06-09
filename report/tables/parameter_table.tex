@@ -1,0 +1,32 @@
+
+\begingroup\small\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}p{0.20\textwidth}p{0.11\textwidth}p{0.16\textwidth}p{0.12\textwidth}p{0.22\textwidth}@{}}
+\caption{Main parameters used in the final simulation campaign.}\label{tab:parameters}\\
+\toprule
+\textbf{Category} & \textbf{Symbol} & \textbf{Value} & \textbf{Unit} & \textbf{Use}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Category} & \textbf{Symbol} & \textbf{Value} & \textbf{Unit} & \textbf{Use}\\
+\midrule
+\endhead
+HER2 concentration sweep & $C$ & 0.5, 1, 10, 100, 1000 & pM & Binding, transport, detectability sweeps\\
+Baseline affinity & $K_d$ & 10 & pM & M1/M3 baseline Langmuir binding\\
+Affinity sweep & $K_d$ & 1, 10, 100 & pM & Detectability and requirement maps\\
+Forward rate constant & $k_f$ & $10^7$ & M$^{-1}$s$^{-1}$ & Reversible binding assumption\\
+Reverse rate constant & $k_r$ & $10^{-4}$ & s$^{-1}$ & $k_r/k_f = 10$ pM\\
+Cortex diffusivity & $D_{cortex}$ & $8\times10^{-11}$ & m$^2$/s & Protein-scale transport baseline\\
+Diffusivity ratio & $r$ & 0.1, 0.25, 0.5, 0.75, 1.0 & -- & Medulla uptake-delay sweep\\
+M2B inlet velocity & $v_{in}$ & 0, $10^{-7}$, $5\times10^{-7}$, $10^{-6}$ & m/s & Prescribed-flow sweep\\
+Channel width & $W$ & 20 & $\mu$m & GFET geometry assumption\\
+Channel length & $L$ & 2 & $\mu$m & GFET geometry assumption\\
+Mobility & $\mu$ & 0.1 & m$^2$/(V s) & Analytical GFET response\\
+Drain-source bias & $V_{DS}$ & 0.05 & V & Analytical GFET response\\
+Effective sensing area & $A_{eff}$ & $4\times10^{-11}$ & m$^2$ & Local GFET active area\\
+Coupling efficiency sweep & $\alpha_0$ & 0.01, 0.03, 0.1 & -- & Electrical detectability and screening\\
+Noise floor sweep & $\sigma$ & 1, 5, 10, 50, 100 & pA & Detection-threshold analysis\\
+Debye lengths & $\lambda_D$ & 9.6, 3.0, 0.8 & nm & Low, intermediate, and PBS-like screening cases\\
+Effective charge distance & $d$ & 0.5, 1, 2, 5, 10 & nm & Debye-screened requirement map\\
+\bottomrule
+\end{longtable}
+\endgroup

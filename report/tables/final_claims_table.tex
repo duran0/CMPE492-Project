@@ -1,21 +1,22 @@
-﻿\begin{table*}[ht]
-\centering
-\caption{Final scientific claims supported by the simulation campaign.}
-\label{tab:final_claims}
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{0.18\textwidth}p{0.24\textwidth}p{0.14\textwidth}p{0.17\textwidth}p{0.17\textwidth}p{0.09\textwidth}}
-\hline
-Claim & Supporting result & Figure/table & Assumption & Limitation & Confidence \\
-\hline
-HER2-antibody binding follows bounded saturation behavior across the modeled concentration range. & M1 occupancy increases monotonically with HER2 concentration and remains within [0, 1]. & Fig.~\ref{fig:m1_occupancy} & Reversible Langmuir-type binding with baseline $K_d=10$ pM. & No wet-lab binding calibration. & High for equation-level behavior. \\
-Directional lymph-node-inspired flow changes sensor exposure compared with diffusion-only transport. & At $C=10$ pM, $v_{in}=5\times10^{-7}$ m/s gives 8.73 pM at 6000 s versus 4.98 pM for diffusion-only; time-to-50\% exposure decreases from 6038 s to 1839 s. & Fig.~\ref{fig:exp_a_flow} & Prescribed velocity is coupled into TDS convection. & M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution. & Medium for model trend. \\
-Sensor placement affects response timing and current response. In the modeled sweep, the subcapsular/cortical placement is fastest and strongest under the reference flow case. Under directional flow, late-time exposure becomes high across all tested placements, while placement still changes arrival time and pathway exposure. & Subcapsular/cortical placement is fastest and strongest under reference flow; late-time current range is 559.9--600.5 pA under flow and 348.2--533.3 pA under diffusion-only transport. & Fig.~\ref{fig:exp_b_exposure} & Three placement regions are post-processed over the M2B transport model. & Placement sweep is not a full remeshed COMSOL sensor relocation study; late-time flow response is high across all tested placements. & Medium for relative sensitivity. \\
-Detectability is predicted only under favorable coupling, low-noise, and binding assumptions. & EXP C gives 99 detectable rows and 36 failing rows across concentration, $\alpha_0$, noise, and $K_d$ sweeps. & Fig.~\ref{fig:exp_c_detectable} & Analytical GFET response with $\Delta I_{DS}\geq3\sigma$. & Graphene electronics and surface chemistry are simplified. & Medium for envelope; low for device claim. \\
-PBS-like Debye screening strongly reduces effective GFET signal for long receptor distances. & For PBS-like $\lambda_D=0.8$ nm and $d\geq5$ nm, 0/60 screened cases remain detectable. & Fig.~\ref{fig:exp_d_lod} & $\alpha_{eff}=\alpha_0\exp(-d/\lambda_D)$. & Debye lengths and distances are approximate assumptions. & Medium for screening direction. \\
-Direct in-body HER2 detection likely requires short receptor distance, low-noise electronics, stronger transduction, or local screening mitigation. & Transport and placement improve antigen exposure, but detection fails under weak coupling, high noise, poor affinity, or PBS-like screening at longer distances. & Table~\ref{tab:final_claims} & Synthesis of M2B exposure, M3 binding, M4 response, and Debye attenuation. & Simulation-based design conclusion, not clinical validation. & High as modeling conclusion. \\
-Feasible GFET-HER2 detection requires explicit design conditions on receptor distance, coupling, screening, and electronics noise. & Experiment E maps required $\alpha_0$, maximum allowed receptor-channel distance, and maximum allowed noise floor. For $K_d=10$ pM, 10 pA noise, and PBS-like screening at 1 nm, required $\alpha_0$ is 0.0326 at 1 pM and 0.00561 at 10 pM; at 2 nm it rises to 0.114 and 0.0196. & Fig.~\ref{fig:exp_e_requirement_map} & M3/M4 analytical response with $\alpha_{eff}=\alpha_0\exp(-d/\lambda_D)$ and $\Delta I_{DS}\geq3\sigma$. & Simulation-based design requirement analysis, not experimental validation or fabricated device performance. & Medium for design trend. \\
-\hline
-\end{tabular}
-}
-\end{table*}
+
+\begingroup\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{longtable}{@{}p{0.15\textwidth}p{0.21\textwidth}p{0.11\textwidth}p{0.13\textwidth}p{0.17\textwidth}p{0.07\textwidth}@{}}
+\caption{Final scientific claims supported by the simulation campaign.}\label{tab:final_claims}\\
+\toprule
+\textbf{Claim} & \textbf{Supporting result} & \textbf{Fig.} & \textbf{Assumption} & \textbf{Limitation} & \textbf{Conf.}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Claim} & \textbf{Supporting result} & \textbf{Fig.} & \textbf{Assumption} & \textbf{Limitation} & \textbf{Conf.}\\
+\midrule
+\endhead
+HER2-antibody binding follows bounded saturation behavior across the modeled concentration range. & M1 occupancy increases monotonically with HER2 concentration and remains within [0, 1]. & Fig.~\ref{fig:m1_occupancy} & Reversible Langmuir-type binding with baseline $K_d=10$ pM. & No wet-lab binding calibration was performed. & High\\
+Directional lymph-node-inspired flow changes sensor exposure compared with diffusion-only transport. & At $C=10$ pM, $v_{in}=5\times10^{-7}$ m/s gives 8.73 pM at 6000 s versus 4.98 pM for diffusion-only; time-to-50\% exposure decreases from 6038 s to 1839 s. & Fig.~\ref{fig:exp_a_flow} & Prescribed velocity is coupled into TDS convection. & M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution. & Medium\\
+Sensor placement affects response timing and current response. & Subcapsular/cortical placement is fastest and strongest under reference flow; late-time current range is 559.9--600.5 pA under flow and 348.2--533.3 pA under diffusion-only transport. & Figs.~\ref{fig:exp_b_exposure}--\ref{fig:exp_b_current} & Three placement regions are post-processed over the same transport model. & Placement sweep is not a full remeshed COMSOL sensor relocation study. & Medium\\
+Sub-pM or low-pM detectability is predicted only under favorable coupling, low-noise, and binding assumptions. & Experiment C gives 99 detectable rows and 36 failing rows across concentration, $\alpha_0$, noise, and $K_d$ sweeps. & Fig.~\ref{fig:exp_c_detectable} & Analytical GFET response with $\Delta I_{DS}\geq3\sigma$. & Graphene electronics and surface chemistry are simplified. & Medium\\
+PBS-like Debye screening strongly reduces effective GFET signal for long receptor distances. & For PBS-like $\lambda_D=0.8$ nm and $d\geq5$ nm, 0 of 60 screened cases remain detectable. & Figs.~\ref{fig:exp_d_lod}--\ref{fig:exp_d_detectable} & Screened coupling model. & Debye lengths and distances are approximate feasibility assumptions. & Medium\\
+Direct in-body HER2 detection likely requires short receptor distance, low-noise electronics, stronger transduction, or local screening mitigation. & Transport and placement improve antigen exposure, but detection fails under weak coupling, high noise, poor affinity, or PBS-like screening at longer distances. & Table~\ref{tab:design_requirements} & Synthesis of M2B exposure, M3 binding, M4 response, and Debye attenuation. & Simulation-based design conclusion, not clinical validation. & High\\
+Feasible GFET-HER2 detection requires explicit design conditions on receptor distance, coupling, screening, and electronics noise. & Experiment E maps required $\alpha_0$, maximum allowed receptor-channel distance, and maximum allowed noise floor. For $K_d=10$ pM, 10 pA noise, and PBS-like screening at 1 nm, required $\alpha_0$ is 0.0326 at 1 pM and 0.00561 at 10 pM. & Fig.~\ref{fig:exp_e_requirement_map} & M3/M4 response with screened coupling. & Simulation-based requirement analysis, not fabricated-device performance. & Medium\\
+\bottomrule
+\end{longtable}
+\endgroup

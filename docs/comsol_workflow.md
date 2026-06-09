@@ -1,4 +1,4 @@
-# COMSOL Workflow
+﻿# COMSOL Workflow
 
 ## Stage M1: 0D HER2-Antibody Binding
 
@@ -36,7 +36,7 @@ Batch evidence:
 
 The meshed single-case solve reports 3103 degrees of freedom plus internal DOFs and completed time stepping. The sweep log records completed time stepping for all five `r` values.
 
-The `M2_comsol_*` CSV files are COMSOL-stage post-processing outputs tied to the meshed TDS model, sweep parameters, and exported solver logs. Direct COMSOL field-table export from the solved `.mph` is not yet automated, so final report text should describe these files as COMSOL-stage post-processed transport metrics rather than raw COMSOL field probes.
+The `M2_comsol_*` CSV files are COMSOL-stage post-processing outputs tied to the meshed TDS model, sweep parameters, and exported solver logs. Direct COMSOL field-table export from the solved `.mph` is not yet available, so final report text should describe these files as COMSOL-stage post-processed transport metrics rather than raw COMSOL field probes.
 
 ## Stage M2B: Partially Anatomical Prescribed-Velocity Flow Extension
 

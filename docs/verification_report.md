@@ -1,11 +1,11 @@
-# Verification Report
+﻿# Verification Report
 
 ## Model File Status
 
 | Model | File | Status | Notes |
 |---|---|---|---|
 | M1 0D binding | `comsol/models/M1_0D_binding/M1_0D_HER2_binding_v01.mph` | Pass | COMSOL batch build completed. |
-| M2 3D transport | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph` | Pass with limitation | Meshed TDS solve completed; direct field-table export is not yet automated. |
+| M2 3D transport | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_solved.mph` | Pass with limitation | Meshed TDS solve completed; direct field-table export is not yet available. |
 | M2 diffusivity sweep | `comsol/models/M2_3D_transport/M2_3D_diffusion_lymphnode_v01_sweep_r_*.mph` | Pass with limitation | Batch sweep completed for all five `r` values; CSV metrics are post-processed transport metrics. |
 | M2B anatomical flow | `comsol/models/M2_3D_transport/M2B_anatomical_flow_lymphnode_v01.mph` | Pass with limitation | Separate prescribed-velocity convection-diffusion extension built and solved without overwriting M2 diffusion. |
 | M3 full boundary | `comsol/models/M3_surface_binding/M3_surface_binding_full_boundary_v01.mph` | Pass | Surface binding recomputed from M2 sensor concentration. |
@@ -126,7 +126,7 @@
 
 ## Remaining Limitations
 
-- Direct COMSOL table export from solved `.mph` field probes is not yet automated.
+- Direct COMSOL table export from solved `.mph` field probes is not yet available.
 - The M2 source boundary is implemented as the Java-selected source boundary set rather than a manually curated anatomical inlet/outlet pair.
 - M2B is a partially anatomical prescribed-velocity convection-diffusion extension, not a full anatomical lymph-node model and not a validated Darcy-flow pressure solution.
 - Direct COMSOL field-table export remains future work; the current quantitative tables are post-processed from the documented COMSOL-stage model and parameter sweeps.
