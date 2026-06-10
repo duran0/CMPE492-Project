@@ -43,9 +43,9 @@ HER2 concentration
 
 ## Final Deliverables
 
-- Final report: `report/final_report.pdf`
-- Poster: `poster/final_poster.pdf`
-- Video script/storyboard: `video/final_video_script.md`
+- Final report: `report/Cmpe492_Final_Report.pdf`
+- Poster: `poster/Cmpe492_Final_Poster.pdf`
+- Video: `video/video_link.md`
 - Simulation results: `results/processed_csv/`
 - Verification report: `docs/verification_report.md`
 

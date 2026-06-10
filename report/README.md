@@ -51,4 +51,4 @@ py scripts\polish_final_report_figures.py
 - `tables/final_claims_table.tex`
 - `tables/final_summary_table.tex`
 
-No required report figure is currently missing.
+
